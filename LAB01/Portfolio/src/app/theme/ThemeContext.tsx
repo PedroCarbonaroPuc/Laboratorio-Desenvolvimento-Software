@@ -41,14 +41,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [isDark],
   );
 
+  /* Sync theme attribute + class on <html> so body/Tailwind also adapt */
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute("data-theme", isDark ? "dark" : "light");
+    root.classList.toggle("dark", isDark);
+    document.body.style.background = isDark
+      ? darkTheme.bg1
+      : lightTheme.bg1;
+  }, [isDark]);
+
   const darkVars = useMemo(() => buildVars(darkTheme), []);
   const lightVars = useMemo(() => buildVars(lightTheme), []);
 
   return (
     <ThemeContext.Provider value={ctx}>
-      {/* Inject CSS custom properties for both themes */}
+      {/* Inject CSS custom properties for both themes on html + wrapper */}
       <style>{`
+        html[data-theme="dark"],
         [data-theme="dark"]{${darkVars}}
+        html[data-theme="light"],
         [data-theme="light"]{${lightVars}}
         html{scroll-behavior:smooth}
         *{box-sizing:border-box}

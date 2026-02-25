@@ -76,36 +76,53 @@ export const darkTheme: ThemeColors = {
 };
 
 export const lightTheme: ThemeColors = {
-  bg1: "#faf9f7",
-  bg2: "#f3f1ed",
-  bg3: "#ebe8e2",
+  /* ── backgrounds: clean cool whites ─────────────────────────── */
+  bg1: "#f8fafc",
+  bg2: "#f1f5f9",
+  bg3: "#e2e8f0",
+
+  /* ── surfaces ───────────────────────────────────────────────── */
   card: "#ffffff",
   cardAlt: "#ffffff",
-  cardHover: "rgba(99, 102, 241, 0.05)",
+  cardHover: "rgba(99, 102, 241, 0.06)",
   input: "#ffffff",
-  nav: "rgba(250, 249, 247, 0.85)",
-  navMobile: "rgba(250, 249, 247, 0.98)",
-  t1: "#1a1a2e",
-  t2: "#3d3d56",
-  t3: "#71717a",
-  t4: "#a1a1aa",
-  border: "rgba(99, 102, 241, 0.25)",
-  border2: "rgba(0, 0, 0, 0.08)",
-  border3: "rgba(0, 0, 0, 0.05)",
-  border4: "rgba(0, 0, 0, 0.03)",
-  badgeBg: "rgba(99, 102, 241, 0.07)",
-  badgeT: "#4f46e5",
+  nav: "rgba(248, 250, 252, 0.88)",
+  navMobile: "rgba(248, 250, 252, 0.98)",
+
+  /* ── typography ─────────────────────────────────────────────── */
+  t1: "#0f172a",
+  t2: "#334155",
+  t3: "#64748b",
+  t4: "#94a3b8",
+
+  /* ── borders ────────────────────────────────────────────────── */
+  border: "rgba(99, 102, 241, 0.30)",
+  border2: "rgba(15, 23, 42, 0.10)",
+  border3: "rgba(15, 23, 42, 0.07)",
+  border4: "rgba(15, 23, 42, 0.04)",
+
+  /* ── badges ─────────────────────────────────────────────────── */
+  badgeBg: "rgba(99, 102, 241, 0.08)",
+  badgeT: "#4338ca",
+
+  /* ── accent (teal) ──────────────────────────────────────────── */
   cyan: "#0d9488",
-  cyanBg: "rgba(13, 148, 136, 0.06)",
-  cyanBorder: "rgba(13, 148, 136, 0.18)",
-  skillTrack: "rgba(0, 0, 0, 0.04)",
-  heroRadial1: "rgba(99, 102, 241, 0.05)",
-  heroRadial2: "rgba(13, 148, 136, 0.03)",
-  heroImg: "0.025",
-  divider: "rgba(0, 0, 0, 0.06)",
-  shadow: "0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06)",
-  shadow2: "0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03)",
-  navBorder: "rgba(0, 0, 0, 0.06)",
-  toggleBg: "rgba(251, 191, 36, 0.12)",
-  toggleBorder: "rgba(251, 191, 36, 0.3)",
+  cyanBg: "rgba(13, 148, 136, 0.08)",
+  cyanBorder: "rgba(13, 148, 136, 0.22)",
+
+  /* ── misc ───────────────────────────────────────────────────── */
+  skillTrack: "rgba(15, 23, 42, 0.06)",
+  heroRadial1: "rgba(99, 102, 241, 0.10)",
+  heroRadial2: "rgba(13, 148, 136, 0.06)",
+  heroImg: "0.018",
+  divider: "rgba(15, 23, 42, 0.08)",
+
+  /* ── shadows ────────────────────────────────────────────────── */
+  shadow: "0 2px 4px rgba(15, 23, 42, 0.06), 0 8px 28px rgba(15, 23, 42, 0.10)",
+  shadow2: "0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.05)",
+
+  /* ── nav / toggle ───────────────────────────────────────────── */
+  navBorder: "rgba(15, 23, 42, 0.08)",
+  toggleBg: "rgba(251, 191, 36, 0.14)",
+  toggleBorder: "rgba(251, 191, 36, 0.35)",
 };

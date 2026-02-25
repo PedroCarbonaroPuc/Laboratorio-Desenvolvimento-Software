@@ -287,7 +287,7 @@ export function Hero() {
             {[
               { icon: <Github size={20} />, href: "https://github.com/pedrocarbonarog", label: "GitHub" },
               { icon: <Linkedin size={20} />, href: "https://linkedin.com/in/pedrocarbonaro", label: "LinkedIn" },
-              { icon: <Mail size={20} />, href: "mailto:pedrocarbonaro73@gmail.com.br", label: "Email" },
+              { icon: <Mail size={20} />, href: "mailto:pacgoncalves@sga.pucminas.br", label: "Email" },
             ].map((social) => (
               <a
                 key={social.label}

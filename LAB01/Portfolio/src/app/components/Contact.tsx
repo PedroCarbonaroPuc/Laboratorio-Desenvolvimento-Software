@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 import { useTranslation } from "../../i18n";
 
+// ── FormSubmit.co ──────────────────────────────────────────────
+// Sem cadastro, sem API key. Na primeira vez que alguém enviar,
+// um link de confirmação será enviado para o e-mail abaixo.
+const FORMSUBMIT_URL = "https://formsubmit.co/ajax/pacgoncalves@sga.pucminas.br";
+
 interface FormData {
   name: string;
   email: string;
@@ -53,10 +58,33 @@ export function Contact() {
     e.preventDefault();
     if (!validate()) return;
     setStatus("sending");
-    await new Promise((resolve) => setTimeout(resolve, 1800));
-    setStatus("success");
-    setForm({ name: "", email: "", subject: "", message: "" });
-    setTimeout(() => setStatus("idle"), 5000);
+
+    try {
+      const res = await fetch(FORMSUBMIT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          _subject: form.subject || "Contato via Portfólio",
+          message: form.message,
+          _template: "table",
+        }),
+      });
+
+      if (!res.ok) throw new Error("FormSubmit error");
+
+      setStatus("success");
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setTimeout(() => setStatus("idle"), 5000);
+    } catch (err) {
+      console.error("Form error:", err);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 5000);
+    }
   };
 
   const inputStyle = (hasError?: string) => ({
@@ -77,8 +105,8 @@ export function Contact() {
     {
       icon: <Mail size={22} />,
       label: "E-mail",
-      value: "pedrocarbonaro73@gmail.com.br",
-      href: "mailto:pedrocarbonaro73@gmail.com.br",
+      value: "pacgoncalves@sga.pucminas.br",
+      href: "mailto:pacgoncalves@sga.pucminas.br",
       color: "#6366f1",
     },
     {
@@ -374,6 +402,52 @@ export function Contact() {
                     }}
                   >
                     {c.successMsg}
+                  </p>
+                </div>
+              ) : status === "error" ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "1rem",
+                    padding: "3rem 1rem",
+                    textAlign: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "72px",
+                      height: "72px",
+                      borderRadius: "50%",
+                      background: "rgba(239, 68, 68, 0.15)",
+                      border: "1.5px solid rgba(239, 68, 68, 0.4)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <AlertCircle size={36} color="#ef4444" />
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "1.25rem",
+                      fontWeight: 700,
+                      color: "var(--p-t1)",
+                    }}
+                  >
+                    {c.errorTitle}
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "0.9375rem",
+                      color: "var(--p-t2)",
+                    }}
+                  >
+                    {c.errorMsg}
                   </p>
                 </div>
               ) : (

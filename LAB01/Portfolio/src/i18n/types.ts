@@ -126,6 +126,8 @@ export interface ContactTranslations {
   required: string;
   successTitle: string;
   successMsg: string;
+  errorTitle: string;
+  errorMsg: string;
   location: string;
 }
 

@@ -97,7 +97,7 @@ export function Footer() {
             {[
               { icon: <Github size={18} />, href: "https://github.com/pedrocarbonarog", label: "GitHub" },
               { icon: <Linkedin size={18} />, href: "https://linkedin.com/in/pedrocarbonaro", label: "LinkedIn" },
-              { icon: <Mail size={18} />, href: "mailto:pedrocarbonaro73@gmail.com.br", label: "Email" },
+              { icon: <Mail size={18} />, href: "mailto:pacgoncalves@sga.pucminas.br", label: "Email" },
             ].map((social) => (
               <a
                 key={social.label}

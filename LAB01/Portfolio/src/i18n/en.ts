@@ -129,6 +129,8 @@ export const en: Translations = {
     required: "* Required fields",
     successTitle: "Message sent!",
     successMsg: "Thanks for reaching out. I'll reply soon!",
+    errorTitle: "Failed to send",
+    errorMsg: "Could not send the message. Please try again or contact me directly via email.",
     location: "Belo Horizonte, MG — Brazil",
   },
 

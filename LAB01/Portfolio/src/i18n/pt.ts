@@ -129,6 +129,8 @@ export const pt: Translations = {
     required: "* Campos obrigatórios",
     successTitle: "Mensagem enviada!",
     successMsg: "Obrigado pelo contato. Responderei em breve!",
+    errorTitle: "Erro ao enviar",
+    errorMsg: "Não foi possível enviar a mensagem. Tente novamente ou entre em contato diretamente pelo e-mail.",
     location: "Belo Horizonte, MG — Brasil",
   },
 

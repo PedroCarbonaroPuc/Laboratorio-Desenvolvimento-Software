@@ -6,6 +6,12 @@
   <img src="https://img.shields.io/badge/institution-PUC-blue?style=for-the-badge" alt="PUC" />
 </p>
 
+<p align="center">
+  <a href="https://portfolio-carbonaro.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🌐%20Ver%20Site-portfolio--carbonaro.vercel.app-6366f1?style=for-the-badge&logo=vercel&logoColor=white" alt="Deploy" />
+  </a>
+</p>
+
 > 📚 Repositório destinado às atividades e projetos desenvolvidos na disciplina de **Laboratório de Desenvolvimento de Software**.
 
 ---
