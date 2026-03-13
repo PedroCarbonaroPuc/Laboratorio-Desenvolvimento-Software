@@ -271,17 +271,6 @@ Os wireframes do projeto foram criados no Figma utilizando o plugin **html.to.de
 
 🔗 **Link do Figma:** [Portfolio — Figma](https://www.figma.com/design/n4aTrwdn8f4mY0tkjoDJbA/Portfolio?node-id=0-1&t=xJEvwMZFZLo1szeY-1)
 
-### Arquivos `.h2d` (html.to.design)
-
-Os arquivos exportados ficam na pasta [`figma_screens/`](figma_screens/):
-
-| Arquivo | Tema | Idioma |
-| :--- | :---: | :---: |
-| `PortfolioDark.h2d` | 🌑 Dark | 🇧🇷 PT-BR |
-| `PorfolioDarkENG.h2d` | 🌑 Dark | 🇺🇸 EN |
-| `PortfolioLight.h2d` | ☀️ Light | 🇧🇷 PT-BR |
-| `PortfolioLightENG.h2d` | ☀️ Light | 🇺🇸 EN |
-
 ---
 
 ## 🔗 Documentações Utilizadas
@@ -297,8 +286,8 @@ Os arquivos exportados ficam na pasta [`figma_screens/`](figma_screens/):
 
 ## 👥 Autores
 
-| 👤 Nome | :octocat: GitHub |
-|---------|-----------------|
+| 👤 Nome | GitHub |
+|---------|--------|
 | Pedro Carbonaro | [![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=flat-square&logo=github)](https://github.com/pedrocarbonaro) |
 
 ---
