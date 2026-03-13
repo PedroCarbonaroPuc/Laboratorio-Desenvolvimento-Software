@@ -142,8 +142,8 @@ App.tsx
 1. **Clone o Repositório:**
 
 ```bash
-git clone <URL_DO_SEU_REPOSITÓRIO>
-cd Portfolio
+git clone https://github.com/PedroCarbonaroPuc/Laboratorio-Desenvolvimento-Software.git
+cd LAB01/Portfolio
 ```
 
 2. **Instale as Dependências:**
