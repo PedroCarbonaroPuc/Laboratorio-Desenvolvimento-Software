@@ -11,11 +11,6 @@
         Portfólio pessoal interativo construído com <b>React</b>, <b>TypeScript</b> e <b>Vite</b>. A aplicação apresenta seções de <i>apresentação (Hero)</i>, <i>sobre mim</i>, <i>projetos</i>, <i>experiências profissionais</i> e <i>contato</i>, tudo com suporte a <b>tema claro/escuro</b> e <b>internacionalização PT-BR / EN</b>. A arquitetura foi projetada para ser <b>modular, escalável e de fácil manutenção</b>, com sistema de temas e traduções desacoplados via React Context API.
       </div>
     </td>
-    <td>
-      <div>
-        <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/code-2.svg" alt="Logo do Projeto" width="100px"/>
-      </div>
-    </td>
   </tr>
 </table>
 
