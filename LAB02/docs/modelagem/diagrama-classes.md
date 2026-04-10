@@ -7,44 +7,30 @@ classDiagram
     direction TB
 
     class User {
-        <<abstract>>
+        <<entity>>
         -String id
         -String email
         -String password
         -UserRole role
+        -String name
+        -String rg
+        -String cpf
+        -String cnpj
+        -String companyName
+        -String phone
+        -Address address
+        -String profession
+        -List~Employer~ employers
         -LocalDateTime createdAt
         -LocalDateTime updatedAt
         +getId() String
         +getEmail() String
         +getRole() UserRole
-    }
-
-    class Client {
-        -String rg
-        -String cpf
-        -String name
-        -Address address
-        -String profession
-        -List~Employer~ employers
         +getName() String
         +getCpf() String
-        +getEmployers() List~Employer~
-        +addEmployer(Employer) void
-        +getTotalIncome() BigDecimal
-    }
-
-    class Agent {
-        -String cnpj
-        -String companyName
-        -Address address
-        -String phone
-        +getCompanyName() String
         +getCnpj() String
-    }
-
-    class Admin {
-        -String name
-        +getName() String
+        +getCompanyName() String
+        +getEmployers() List~Employer~
     }
 
     class Address {
@@ -196,25 +182,19 @@ classDiagram
         -LoadTestResult result
     }
 
-    %% Herança
-    User <|-- Client : extends
-    User <|-- Agent : extends
-    User <|-- Admin : extends
-
     %% Composição e Agregação
-    Client *-- Address : tem
-    Client *-- "0..3" Employer : possui
-    Agent *-- Address : tem
+    User *-- Address : tem
+    User *-- "0..3" Employer : possui
     RentalOrder *-- FinancialAnalysis : contém
 
     %% Associações
-    RentalOrder --> "1" Client : solicitado por
+    RentalOrder --> "1" User : solicitado por (CLIENT)
     RentalOrder --> "1" Vehicle : refere-se a
     RentalOrder --> "0..1" CreditContract : possui
-    CreditContract --> "1" Agent : concedido por
-    CreditContract --> "1" Client : contratado por
+    CreditContract --> "1" User : concedido por (AGENT)
+    CreditContract --> "1" User : contratado por (CLIENT)
     Vehicle --> "1" OwnerType : propriedade de
-    FinancialAnalysis --> "1" Agent : avaliado por
+    FinancialAnalysis --> "1" User : avaliado por (AGENT)
     LoadTestEvent --> "0..1" LoadTestResult : contém
 
     %% Enumerations
@@ -232,57 +212,28 @@ classDiagram
 
 ## 2. Descrição das Classes
 
-### 2.1 User (Abstrata)
-Classe base para todos os usuários do sistema. Contém dados comuns de autenticação e controle.
+### 2.1 User
+Entidade unificada que representa todos os usuários do sistema. O campo `role` diferencia entre Client, Agent e Admin. Campos específicos de cada perfil são preenchidos conforme o role (campos não aplicáveis ficam nulos).
 
-| Atributo   | Tipo          | Descrição                            |
-|------------|---------------|--------------------------------------|
-| id         | String        | Identificador único (MongoDB ObjectId) |
-| email      | String        | E-mail para autenticação (único)     |
-| password   | String        | Senha criptografada (BCrypt)         |
-| role       | UserRole      | Papel do usuário no sistema          |
-| createdAt  | LocalDateTime | Data de criação do registro          |
-| updatedAt  | LocalDateTime | Data da última atualização           |
+| Atributo    | Tipo            | Descrição                            | Roles aplicáveis |
+|-------------|-----------------|--------------------------------------|------------------|
+| id          | String          | Identificador único (MongoDB ObjectId) | Todos          |
+| email       | String          | E-mail para autenticação (único)     | Todos            |
+| password    | String          | Senha criptografada (BCrypt)         | Todos            |
+| role        | UserRole        | Papel do usuário no sistema          | Todos            |
+| name        | String          | Nome completo / Nome do admin        | CLIENT, ADMIN    |
+| rg          | String          | Registro Geral                       | CLIENT           |
+| cpf         | String          | CPF (único, validado)                | CLIENT           |
+| profession  | String          | Profissão                            | CLIENT           |
+| employers   | List\<Employer> | Entidades empregadoras (máximo 3)    | CLIENT           |
+| cnpj        | String          | CNPJ (único, validado)               | AGENT            |
+| companyName | String          | Razão social da empresa              | AGENT            |
+| phone       | String          | Telefone de contato                  | AGENT            |
+| address     | Address         | Endereço (objeto embarcado)          | CLIENT, AGENT    |
+| createdAt   | LocalDateTime   | Data de criação do registro          | Todos            |
+| updatedAt   | LocalDateTime   | Data da última atualização           | Todos            |
 
----
-
-### 2.2 Client (extends User)
-Representa um usuário individual que aluga automóveis.
-
-| Atributo   | Tipo            | Descrição                                  |
-|------------|-----------------|--------------------------------------------|
-| rg         | String          | Registro Geral                             |
-| cpf        | String          | CPF (único, validado)                      |
-| name       | String          | Nome completo                              |
-| address    | Address         | Endereço completo (objeto embarcado)       |
-| profession | String          | Profissão                                  |
-| employers  | List\<Employer> | Entidades empregadoras (máximo 3)          |
-
----
-
-### 2.3 Agent (extends User)
-Representa uma empresa (agente) que avalia e gerencia pedidos.
-
-| Atributo    | Tipo    | Descrição                          |
-|-------------|---------|------------------------------------|
-| cnpj        | String  | CNPJ (único, validado)             |
-| companyName | String  | Razão social da empresa            |
-| address     | Address | Endereço da empresa                |
-| phone       | String  | Telefone de contato                |
----
-
-### 2.4 Admin (extends User)
-Representa o administrador geral (dono da empresa RentACar) com acesso administrativo total.
-
-| Atributo | Tipo   | Descrição                          |
-|----------|--------|------------------------------------|--------|
-| name     | String | Nome do administrador              |
-### 2.4 Admin (extends User)
-Representa o administrador geral (dono da empresa RentACar) com acesso administrativo total.
-
-| Atributo | Tipo   | Descrição                          |
-|----------|--------|------------------------------------|--------|
-| name     | String | Nome do administrador              |
+> **Nota de implementação:** No código, `User` é uma entidade única mapeada para a collection `users` do MongoDB (`@MappedEntity("users")`). Não há hierarquia de herança — a diferenciação entre perfis é feita exclusivamente pelo campo `role` (CLIENT, AGENT, ADMIN). Campos específicos de cada perfil que não se aplicam permanecem nulos.
 
 ---
 

@@ -1,16 +1,15 @@
 package com.rentacar.controller;
 
 import com.rentacar.dto.response.*;
-import com.rentacar.model.Admin;
+import com.rentacar.model.User;
 import com.rentacar.service.AdminService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 
-@RestController
-@RequestMapping("/api/admin")
-@PreAuthorize("hasRole('ADMIN')")
+@Controller("/api/admin")
+@Secured({"ADMIN"})
 public class AdminController {
 
     private final AdminService adminService;
@@ -19,37 +18,37 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<AdminResponse> getMyProfile(Authentication authentication) {
+    @Get("/me")
+    public HttpResponse<AdminResponse> getMyProfile(Authentication authentication) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(adminService.getAdminProfile(userId));
+        return HttpResponse.ok(adminService.getAdminProfile(userId));
     }
 
-    @PutMapping("/me")
-    public ResponseEntity<AdminResponse> updateMyProfile(Authentication authentication,
-                                                         @RequestBody Admin updates) {
+    @Put("/me")
+    public HttpResponse<AdminResponse> updateMyProfile(Authentication authentication,
+                                                       @Body User updates) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(adminService.updateAdmin(userId, updates));
+        return HttpResponse.ok(adminService.updateAdmin(userId, updates));
     }
 
-    @GetMapping("/dashboard")
-    public ResponseEntity<AdminDashboardResponse> getDashboard() {
-        return ResponseEntity.ok(adminService.getDashboard());
+    @Get("/dashboard")
+    public HttpResponse<AdminDashboardResponse> getDashboard() {
+        return HttpResponse.ok(adminService.getDashboard());
     }
 
-    @GetMapping("/clients/{id}")
-    public ResponseEntity<AdminClientDetailResponse> getClientDetail(@PathVariable String id) {
-        return ResponseEntity.ok(adminService.getClientDetail(id));
+    @Get("/clients/{id}")
+    public HttpResponse<AdminClientDetailResponse> getClientDetail(@PathVariable String id) {
+        return HttpResponse.ok(adminService.getClientDetail(id));
     }
 
-    @GetMapping("/agents/{id}")
-    public ResponseEntity<AdminAgentDetailResponse> getAgentDetail(@PathVariable String id) {
-        return ResponseEntity.ok(adminService.getAgentDetail(id));
+    @Get("/agents/{id}")
+    public HttpResponse<AdminAgentDetailResponse> getAgentDetail(@PathVariable String id) {
+        return HttpResponse.ok(adminService.getAgentDetail(id));
     }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    @Delete("/users/{id}")
+    public HttpResponse<Void> deleteUser(@PathVariable String id) {
         adminService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return HttpResponse.noContent();
     }
 }

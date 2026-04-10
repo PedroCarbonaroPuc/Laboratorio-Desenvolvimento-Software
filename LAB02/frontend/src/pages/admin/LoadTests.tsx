@@ -23,14 +23,14 @@ const TEST_TYPES: TestConfig[] = [
     label: 'Leitura de Banco',
     description: 'Consultas simultâneas ao MongoDB',
     icon: Database,
-    details: 'Executa findAll() em veículos e pedidos para cada requisição. Ideal para comparar a eficiência de drivers bloqueantes (Spring Data MongoDB) vs. reativos (Spring Data MongoDB Reactive).',
+    details: 'Executa findAll() em veículos e pedidos para cada requisição. Ideal para comparar a eficiência de drivers bloqueantes (Micronaut Data MongoDB) vs. reativos (MongoDB Reactive Streams).',
   },
   {
     type: 'io_simulation',
     label: 'Simulação de I/O',
     description: 'Simula chamadas a APIs externas',
     icon: Globe,
-    details: 'Simula latência de rede com Thread.sleep() (bloqueante) vs. Mono.delay() (reativo). Este é o cenário onde o WebFlux mostra sua maior vantagem: threads não ficam bloqueadas aguardando I/O.',
+    details: 'Simula latência de rede com Thread.sleep() (bloqueante) vs. Mono.delay() (reativo). Este é o cenário onde o Reactive mostra sua maior vantagem: threads não ficam bloqueadas aguardando I/O.',
   },
   {
     type: 'concurrent_load',
@@ -104,7 +104,7 @@ export default function LoadTests() {
   const handleEvent = useCallback((event: LoadTestEvent) => {
     switch (event.type) {
       case 'progress':
-        if (event.architecture === 'SPRING_MVC') {
+        if (event.architecture === 'MICRONAUT_SYNC') {
           setCurrentPhase('mvc');
           setMvcProgress(Math.round((event.completedRequests / event.totalRequests) * 100));
           if (event.currentAvgMs) setMvcAvg(event.currentAvgMs);
@@ -117,7 +117,7 @@ export default function LoadTests() {
         break;
       case 'result':
         if (event.result) {
-          if (event.architecture === 'SPRING_MVC') {
+          if (event.architecture === 'MICRONAUT_SYNC') {
             setMvcResult(event.result);
             setMvcProgress(100);
           } else {
@@ -202,7 +202,7 @@ export default function LoadTests() {
           <div>
             <h1 className="text-2xl font-bold text-primary-900 dark:text-white">Testes de Carga</h1>
             <p className="text-primary-500 dark:text-primary-400">
-              Comparação em tempo real: Spring MVC (Bloqueante) vs Spring WebFlux (Reativo)
+              Comparação em tempo real: Micronaut Sync (Bloqueante) vs Micronaut Reactive (Reativo)
             </p>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default function LoadTests() {
         <div className="card p-5 border-l-4 border-l-orange-500">
           <div className="flex items-center gap-3 mb-2">
             <Server className="w-5 h-5 text-orange-500" />
-            <h3 className="font-bold text-primary-900 dark:text-white">Spring MVC</h3>
+            <h3 className="font-bold text-primary-900 dark:text-white">Micronaut Sync</h3>
             <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-full font-medium">Bloqueante</span>
           </div>
           <p className="text-sm text-primary-500 dark:text-primary-400">
@@ -223,7 +223,7 @@ export default function LoadTests() {
         <div className="card p-5 border-l-4 border-l-emerald-500">
           <div className="flex items-center gap-3 mb-2">
             <Wifi className="w-5 h-5 text-emerald-500" />
-            <h3 className="font-bold text-primary-900 dark:text-white">Spring WebFlux</h3>
+            <h3 className="font-bold text-primary-900 dark:text-white">Micronaut Reactive</h3>
             <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">Reativo</span>
           </div>
           <p className="text-sm text-primary-500 dark:text-primary-400">
@@ -380,7 +380,7 @@ export default function LoadTests() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Server className="w-4 h-4 text-orange-500" />
-                <h3 className="font-bold text-primary-900 dark:text-white text-sm">Spring MVC</h3>
+                <h3 className="font-bold text-primary-900 dark:text-white text-sm">Micronaut Sync</h3>
               </div>
               {currentPhase === 'mvc' && <Activity className="w-4 h-4 text-orange-500 animate-pulse" />}
               {mvcResult && <CheckCircle2 className="w-4 h-4 text-success" />}
@@ -401,7 +401,7 @@ export default function LoadTests() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Wifi className="w-4 h-4 text-emerald-500" />
-                <h3 className="font-bold text-primary-900 dark:text-white text-sm">Spring WebFlux</h3>
+                <h3 className="font-bold text-primary-900 dark:text-white text-sm">Micronaut Reactive</h3>
               </div>
               {currentPhase === 'webflux' && <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />}
               {webfluxResult && <CheckCircle2 className="w-4 h-4 text-success" />}
@@ -447,7 +447,7 @@ export default function LoadTests() {
                   <tr className="border-b border-primary-200 dark:border-primary-700">
                     <th className="text-left py-3 px-5 text-xs font-semibold text-primary-500 uppercase">Métrica</th>
                     <th className="text-center py-3 px-5 text-xs font-semibold text-orange-500 uppercase">
-                      <div className="flex items-center justify-center gap-1"><Server className="w-3 h-3" /> Spring MVC</div>
+                      <div className="flex items-center justify-center gap-1"><Server className="w-3 h-3" /> Micronaut Sync</div>
                     </th>
                     <th className="text-center py-3 px-5 text-xs font-semibold text-emerald-500 uppercase">
                       <div className="flex items-center justify-center gap-1"><Wifi className="w-3 h-3" /> WebFlux</div>
@@ -638,15 +638,15 @@ function AnalysisInsight({ mvc, webflux, testType }: {
   const insights: string[] = [];
 
   if (mvcFaster) {
-    insights.push(`O Spring MVC completou o teste ${speedup}% mais rápido que o WebFlux. Isso pode indicar que a carga não é suficientemente alta ou I/O-intensiva para beneficiar o modelo reativo.`);
+    insights.push(`O Micronaut Sync completou o teste ${speedup}% mais rápido que o Reactive. Isso pode indicar que a carga não é suficientemente alta ou I/O-intensiva para beneficiar o modelo reativo.`);
   } else {
-    insights.push(`O Spring WebFlux completou o teste ${speedup}% mais rápido que o MVC. O modelo reativo teve vantagem ao não bloquear threads durante operações de I/O.`);
+    insights.push(`O Micronaut Reactive completou o teste ${speedup}% mais rápido que o Sync. O modelo reativo teve vantagem ao não bloquear threads durante operações de I/O.`);
   }
 
-  insights.push(`O WebFlux utilizou ${threadRatio}% das threads que o MVC precisou no pico (${webflux.peakThreadCount} vs ${mvc.peakThreadCount}). Menos threads significa menor consumo de memória do stack e menor overhead de context-switching.`);
+  insights.push(`O WebFlux utilizou ${threadRatio}% das threads que o Sync precisou no pico (${webflux.peakThreadCount} vs ${mvc.peakThreadCount}). Menos threads significa menor consumo de memória do stack e menor overhead de context-switching.`);
 
   if (testType === 'io_simulation') {
-    insights.push('Em cenários de I/O puro, o WebFlux se destaca porque threads não ficam bloqueadas — Mono.delay() libera a thread imediatamente, enquanto Thread.sleep() mantém a thread ocupada.');
+    insights.push('Em cenários de I/O puro, o Reactive se destaca porque threads não ficam bloqueadas — Mono.delay() libera a thread imediatamente, enquanto Thread.sleep() mantém a thread ocupada.');
   } else if (testType === 'database_read') {
     insights.push('Em operações de banco de dados, o driver reativo do MongoDB permite que a JVM processe outras requisições enquanto aguarda a resposta do banco, diferente do driver bloqueante que mantém a thread parada.');
   } else if (testType === 'mixed_workload') {

@@ -3,39 +3,29 @@ package com.rentacar.service;
 import com.rentacar.dto.response.*;
 import com.rentacar.exception.BusinessException;
 import com.rentacar.exception.ResourceNotFoundException;
-import com.rentacar.model.Admin;
-import com.rentacar.model.Agent;
-import com.rentacar.model.Client;
 import com.rentacar.model.User;
 import com.rentacar.model.enums.OrderStatus;
 import com.rentacar.model.enums.UserRole;
 import com.rentacar.repository.*;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Singleton
 public class AdminService {
 
     private final UserRepository userRepository;
-    private final ClientRepository clientRepository;
-    private final AgentRepository agentRepository;
-    private final AdminRepository adminRepository;
     private final VehicleRepository vehicleRepository;
     private final RentalOrderRepository rentalOrderRepository;
     private final RentalOrderService rentalOrderService;
     private final VehicleService vehicleService;
 
-    public AdminService(UserRepository userRepository, ClientRepository clientRepository,
-                        AgentRepository agentRepository, AdminRepository adminRepository,
+    public AdminService(UserRepository userRepository,
                         VehicleRepository vehicleRepository, RentalOrderRepository rentalOrderRepository,
                         RentalOrderService rentalOrderService, VehicleService vehicleService) {
         this.userRepository = userRepository;
-        this.clientRepository = clientRepository;
-        this.agentRepository = agentRepository;
-        this.adminRepository = adminRepository;
         this.vehicleRepository = vehicleRepository;
         this.rentalOrderRepository = rentalOrderRepository;
         this.rentalOrderService = rentalOrderService;
@@ -43,47 +33,44 @@ public class AdminService {
     }
 
     public AdminResponse getAdminProfile(String adminId) {
-        Admin admin = adminRepository.findById(adminId)
+        User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new ResourceNotFoundException("Administrador não encontrado"));
         return toAdminResponse(admin);
     }
 
-    public AdminResponse updateAdmin(String id, Admin updates) {
-        Admin admin = adminRepository.findById(id)
+    public AdminResponse updateAdmin(String id, User updates) {
+        User admin = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Administrador não encontrado"));
 
         if (updates.getName() != null) admin.setName(updates.getName());
         admin.setUpdatedAt(LocalDateTime.now());
 
-        admin = adminRepository.save(admin);
+        admin = userRepository.update(admin);
         return toAdminResponse(admin);
     }
 
     public AdminDashboardResponse getDashboard() {
         List<UserSummaryResponse> users = new ArrayList<>();
 
-        // Query users by role to avoid cross-collection type issues
-        userRepository.findByRole(UserRole.CLIENT).forEach(user -> {
-            Client client = clientRepository.findById(user.getId()).orElse(null);
+        userRepository.findByRole(UserRole.CLIENT).forEach(user ->
             users.add(UserSummaryResponse.builder()
                     .id(user.getId())
                     .email(user.getEmail())
-                    .name(client != null ? client.getName() : "")
+                    .name(user.getName() != null ? user.getName() : "")
                     .role(UserRole.CLIENT.name())
                     .createdAt(user.getCreatedAt())
-                    .build());
-        });
+                    .build())
+        );
 
-        userRepository.findByRole(UserRole.AGENT).forEach(user -> {
-            Agent agent = agentRepository.findById(user.getId()).orElse(null);
+        userRepository.findByRole(UserRole.AGENT).forEach(user ->
             users.add(UserSummaryResponse.builder()
                     .id(user.getId())
                     .email(user.getEmail())
-                    .name(agent != null ? agent.getCompanyName() : "")
+                    .name(user.getCompanyName() != null ? user.getCompanyName() : "")
                     .role(UserRole.AGENT.name())
                     .createdAt(user.getCreatedAt())
-                    .build());
-        });
+                    .build())
+        );
 
         long activeOrders = rentalOrderRepository.findByStatus(OrderStatus.ACTIVE).size();
 
@@ -103,13 +90,11 @@ public class AdminService {
         if (user.getRole() != UserRole.CLIENT) {
             throw new ResourceNotFoundException("Cliente não encontrado");
         }
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
 
         List<RentalOrderResponse> orders = rentalOrderService.getClientOrders(clientId);
 
         return AdminClientDetailResponse.builder()
-                .client(toClientResponse(client))
+                .client(toClientResponse(user))
                 .orders(orders)
                 .build();
     }
@@ -120,8 +105,6 @@ public class AdminService {
         if (user.getRole() != UserRole.AGENT) {
             throw new ResourceNotFoundException("Agente não encontrado");
         }
-        Agent agent = agentRepository.findById(agentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Agente não encontrado"));
 
         List<VehicleResponse> vehicles = vehicleRepository.findByOwnerId(agentId).stream()
                 .map(v -> VehicleResponse.builder()
@@ -142,7 +125,7 @@ public class AdminService {
         List<RentalOrderResponse> orders = rentalOrderService.getAllOrders();
 
         return AdminAgentDetailResponse.builder()
-                .agent(toAgentResponse(agent))
+                .agent(toAgentResponse(user))
                 .vehicles(vehicles)
                 .orders(orders)
                 .build();
@@ -159,7 +142,7 @@ public class AdminService {
         userRepository.deleteById(userId);
     }
 
-    private AdminResponse toAdminResponse(Admin admin) {
+    private AdminResponse toAdminResponse(User admin) {
         return AdminResponse.builder()
                 .id(admin.getId())
                 .email(admin.getEmail())
@@ -168,30 +151,30 @@ public class AdminService {
                 .build();
     }
 
-    private ClientResponse toClientResponse(Client client) {
+    private ClientResponse toClientResponse(User user) {
         return ClientResponse.builder()
-                .id(client.getId())
-                .email(client.getEmail())
-                .name(client.getName())
-                .rg(client.getRg())
-                .cpf(client.getCpf())
-                .address(client.getAddress())
-                .profession(client.getProfession())
-                .employers(client.getEmployers())
-                .totalIncome(client.getTotalIncome())
-                .createdAt(client.getCreatedAt())
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .rg(user.getRg())
+                .cpf(user.getCpf())
+                .address(user.getAddress())
+                .profession(user.getProfession())
+                .employers(user.getEmployers())
+                .totalIncome(user.getTotalIncome())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 
-    private AgentResponse toAgentResponse(Agent agent) {
+    private AgentResponse toAgentResponse(User user) {
         return AgentResponse.builder()
-                .id(agent.getId())
-                .email(agent.getEmail())
-                .companyName(agent.getCompanyName())
-                .cnpj(agent.getCnpj())
-                .address(agent.getAddress())
-                .phone(agent.getPhone())
-                .createdAt(agent.getCreatedAt())
+                .id(user.getId())
+                .email(user.getEmail())
+                .companyName(user.getCompanyName())
+                .cnpj(user.getCnpj())
+                .address(user.getAddress())
+                .phone(user.getPhone())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

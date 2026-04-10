@@ -1,12 +1,14 @@
 package com.rentacar.model;
 
 import com.rentacar.model.enums.OrderStatus;
+import io.micronaut.data.annotation.GeneratedValue;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,10 +19,12 @@ import java.time.temporal.ChronoUnit;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "rental_orders")
+@Serdeable
+@MappedEntity("rental_orders")
 public class RentalOrder {
 
     @Id
+    @GeneratedValue
     private String id;
 
     private String clientId;

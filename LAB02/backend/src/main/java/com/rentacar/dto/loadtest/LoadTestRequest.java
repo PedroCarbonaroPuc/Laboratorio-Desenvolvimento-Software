@@ -1,8 +1,11 @@
 package com.rentacar.dto.loadtest;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import lombok.Data;
 
 @Data
+@Serdeable
 public class LoadTestRequest {
     private String testType;       // database_read, io_simulation, concurrent_load, mixed_workload
     private int totalRequests;     // total operations

@@ -1,5 +1,7 @@
 package com.rentacar.dto.request;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import com.rentacar.model.enums.OwnerType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class CreateVehicleRequest {
 
     @NotBlank(message = "Matrícula é obrigatória")

@@ -1,15 +1,18 @@
 package com.rentacar.controller;
 
+import com.rentacar.dto.loadtest.LoadTestEvent;
 import com.rentacar.dto.loadtest.LoadTestRequest;
 import com.rentacar.service.LoadTestService;
-import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.sse.Event;
+import io.micronaut.security.annotation.Secured;
+import org.reactivestreams.Publisher;
 
-@RestController
-@RequestMapping("/api/load-tests")
-@PreAuthorize("hasRole('ADMIN')")
+@Controller("/api/load-tests")
+@Secured({"ADMIN"})
 public class LoadTestController {
 
     private final LoadTestService loadTestService;
@@ -18,17 +21,8 @@ public class LoadTestController {
         this.loadTestService = loadTestService;
     }
 
-    @PostMapping(value = "/run", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter runTest(@RequestBody LoadTestRequest request) {
-        // 5 minute timeout
-        SseEmitter emitter = new SseEmitter(300_000L);
-
-        emitter.onCompletion(() -> {});
-        emitter.onTimeout(emitter::complete);
-        emitter.onError(e -> emitter.complete());
-
-        loadTestService.executeTest(request, emitter);
-
-        return emitter;
+    @Post(value = "/run", produces = MediaType.TEXT_EVENT_STREAM)
+    public Publisher<Event<LoadTestEvent>> runTest(@Body LoadTestRequest request) {
+        return loadTestService.executeTest(request);
     }
 }

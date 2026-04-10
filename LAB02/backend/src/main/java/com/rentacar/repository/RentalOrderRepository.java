@@ -2,11 +2,13 @@ package com.rentacar.repository;
 
 import com.rentacar.model.RentalOrder;
 import com.rentacar.model.enums.OrderStatus;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import io.micronaut.data.mongodb.annotation.MongoRepository;
+import io.micronaut.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface RentalOrderRepository extends MongoRepository<RentalOrder, String> {
+@MongoRepository
+public interface RentalOrderRepository extends CrudRepository<RentalOrder, String> {
 
     List<RentalOrder> findByClientId(String clientId);
 
@@ -15,4 +17,6 @@ public interface RentalOrderRepository extends MongoRepository<RentalOrder, Stri
     List<RentalOrder> findByStatus(OrderStatus status);
 
     List<RentalOrder> findByVehicleIdAndStatusIn(String vehicleId, List<OrderStatus> statuses);
+
+    List<RentalOrder> findAll();
 }

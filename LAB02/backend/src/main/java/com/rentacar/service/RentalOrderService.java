@@ -6,17 +6,17 @@ import com.rentacar.dto.request.UpdateRentalOrderRequest;
 import com.rentacar.dto.response.RentalOrderResponse;
 import com.rentacar.exception.BusinessException;
 import com.rentacar.exception.ResourceNotFoundException;
-import com.rentacar.model.Client;
 import com.rentacar.model.FinancialAnalysis;
 import com.rentacar.model.RentalOrder;
+import com.rentacar.model.User;
 import com.rentacar.model.Vehicle;
 import com.rentacar.model.enums.OrderStatus;
 import com.rentacar.repository.RentalOrderRepository;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+@Singleton
 public class RentalOrderService {
 
     private final RentalOrderRepository rentalOrderRepository;
@@ -109,7 +109,7 @@ public class RentalOrderService {
         order.calculateTotalAmount(vehicle.getDailyRate());
         order.setUpdatedAt(LocalDateTime.now());
 
-        order = rentalOrderRepository.save(order);
+        order = rentalOrderRepository.update(order);
         return toResponse(order);
     }
 
@@ -129,7 +129,7 @@ public class RentalOrderService {
         order.setUpdatedAt(LocalDateTime.now());
         vehicleService.setVehicleAvailability(order.getVehicleId(), true);
 
-        order = rentalOrderRepository.save(order);
+        order = rentalOrderRepository.update(order);
         return toResponse(order);
     }
 
@@ -170,7 +170,7 @@ public class RentalOrderService {
         }
 
         order.setUpdatedAt(LocalDateTime.now());
-        order = rentalOrderRepository.save(order);
+        order = rentalOrderRepository.update(order);
         return toResponse(order);
     }
 
@@ -189,7 +189,7 @@ public class RentalOrderService {
         order.setStatus(OrderStatus.APPROVED);
         order.setUpdatedAt(LocalDateTime.now());
 
-        order = rentalOrderRepository.save(order);
+        order = rentalOrderRepository.update(order);
         return toResponse(order);
     }
 
@@ -205,7 +205,7 @@ public class RentalOrderService {
         order.setUpdatedAt(LocalDateTime.now());
         vehicleService.setVehicleAvailability(order.getVehicleId(), true);
 
-        order = rentalOrderRepository.save(order);
+        order = rentalOrderRepository.update(order);
         return toResponse(order);
     }
 
@@ -214,7 +214,7 @@ public class RentalOrderService {
         String vehicleDescription = "";
 
         try {
-            Client client = clientService.getClientEntity(order.getClientId());
+            User client = clientService.getClientEntity(order.getClientId());
             clientName = client.getName();
         } catch (Exception ignored) {}
 

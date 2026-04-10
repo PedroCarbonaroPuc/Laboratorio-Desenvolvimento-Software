@@ -1,15 +1,18 @@
 package com.rentacar.controller;
 
 import com.rentacar.dto.response.ClientResponse;
-import com.rentacar.model.Client;
+import com.rentacar.model.User;
 import com.rentacar.service.ClientService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Put;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 
-@RestController
-@RequestMapping("/api/clients")
+@Controller("/api/clients")
+@Secured({"CLIENT"})
 public class ClientController {
 
     private final ClientService clientService;
@@ -18,18 +21,16 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<ClientResponse> getMyProfile(Authentication authentication) {
+    @Get("/me")
+    public HttpResponse<ClientResponse> getMyProfile(Authentication authentication) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(clientService.getClientById(userId));
+        return HttpResponse.ok(clientService.getClientById(userId));
     }
 
-    @PutMapping("/me")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<ClientResponse> updateMyProfile(Authentication authentication,
-                                                          @RequestBody Client updates) {
+    @Put("/me")
+    public HttpResponse<ClientResponse> updateMyProfile(Authentication authentication,
+                                                        @Body User updates) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(clientService.updateClient(userId, updates));
+        return HttpResponse.ok(clientService.updateClient(userId, updates));
     }
 }

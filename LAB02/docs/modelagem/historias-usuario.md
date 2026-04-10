@@ -303,16 +303,16 @@
 
 ## Épico 9: Testes de Carga
 
-### HU-19 — Executar Testes de Carga Comparativos (MVC vs WebFlux)
+### HU-19 — Executar Testes de Carga Comparativos (Sync vs Reactive)
 **Como** o admin geral,  
-**Quero** executar testes de carga comparando Spring MVC (bloqueante) e Spring WebFlux (reativo) em tempo real,  
+**Quero** executar testes de carga comparando Micronaut Sync (bloqueante) e Micronaut Reactive (reativo) em tempo real,  
 **Para que** eu possa demonstrar e analisar as diferenças de performance entre as duas arquiteturas.
 
 **Critérios de Aceitação:**
 - O módulo deve ser acessível apenas pelo Admin Geral.
 - Deve haver 4 tipos de teste: Leitura de Banco, Simulação de I/O, Carga Concorrente e Carga Mista.
 - O usuário pode configurar: total de requisições, nível de concorrência e latência de I/O simulada.
-- Os testes devem ser executados primeiro no MVC e depois no WebFlux, com progresso em tempo real via SSE.
+- Os testes devem ser executados primeiro no Sync e depois no Reactive, com progresso em tempo real via SSE.
 - As métricas coletadas devem incluir: tempo total, latência média/mín/máx, percentis P50/P95/P99, throughput, threads pico e memória.
 - Os resultados devem ser exibidos lado a lado com indicadores visuais de vencedor por métrica.
 - Deve haver barras de comparação visual da distribuição de latência.
@@ -366,6 +366,6 @@
 | HU-16 | Consultar Detalhes de Cliente (Admin)     | Alta       | 5      |
 | HU-17 | Consultar Detalhes de Agente (Admin)      | Alta       | 5      |
 | HU-18 | Excluir Usuário do Sistema                | Média      | 3      |
-| HU-19 | Executar Testes de Carga (MVC vs WebFlux) | Alta       | 13     |
+| HU-19 | Executar Testes de Carga (Sync vs Reactive) | Alta       | 13     |
 | HU-20 | Alternar Tema Claro/Escuro                | Média      | 8      |
 | **Total** |                                       | —          | **108** |

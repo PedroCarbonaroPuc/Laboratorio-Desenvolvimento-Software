@@ -11,7 +11,7 @@ graph TB
     end
 
     subgraph "Camada de Aplicação"
-        BE[Backend - Spring Boot/Java]
+        BE[Backend - Micronaut/Java]
     end
 
     subgraph "Camada de Dados"
@@ -19,7 +19,7 @@ graph TB
     end
 
     FE -->|HTTP/REST JSON| BE
-    BE -->|Spring Data MongoDB| DB
+    BE -->|Micronaut Data MongoDB| DB
 ```
 
 ### Visualização do Diagrama — Visão Geral
@@ -28,7 +28,7 @@ graph TB
 
 ---
 
-## 2. Diagrama de Pacotes — Backend (Java/Spring Boot)
+## 2. Diagrama de Pacotes — Backend (Java/Micronaut)
 
 ```mermaid
 graph TB
@@ -90,23 +90,13 @@ graph TB
 
         subgraph "repository"
             UserRepository
-            ClientRepository
-            AgentRepository
-            AdminRepository
             VehicleRepository
             RentalOrderRepository
             CreditContractRepository
-            subgraph "repository.reactive"
-                ReactiveVehicleRepository
-                ReactiveRentalOrderRepository
-            end
         end
 
         subgraph "model"
             User
-            Client
-            Agent
-            Admin
             Vehicle
             RentalOrder
             CreditContract
@@ -123,14 +113,11 @@ graph TB
 
         subgraph "security"
             JwtTokenProvider
-            JwtAuthenticationFilter
-            UserDetailsServiceImpl
+            JwtTokenValidator
+            PasswordEncoder
         end
 
         subgraph "config"
-            SecurityConfig
-            MongoConfig
-            WebConfig
             DataSeeder
         end
 
@@ -277,7 +264,7 @@ Controller → Security (via annotations)
 ```
 
 **Princípios aplicados:**
-- **Inversão de Dependência (DIP):** Services dependem de abstrações (interfaces de repositórios).
+- **Inversão de Dependência (DIP):** Services dependem de abstrações (interfaces de repositórios Micronaut Data).
 - **Responsabilidade Única (SRP):** Cada camada tem responsabilidade bem definida.
 - **Separação de Concerns:** Controllers não acessam repositórios diretamente.
 
@@ -307,11 +294,11 @@ Components → Types
 |---------------------|----------------------------------------------------------------------------------|
 | **controller**      | Receber requisições HTTP, validar entrada, delegar para services, retornar DTOs  |
 | **service**         | Implementar regras de negócio, orquestrar operações, gerenciar transações        |
-| **repository**      | Abstrair acesso ao MongoDB via Spring Data                                       |
+| **repository**      | Abstrair acesso ao MongoDB via Micronaut Data                                    |
 | **model**           | Representar entidades do domínio e objetos de valor                              |
 | **dto**             | Transferir dados entre camadas sem expor entidades                               |
 | **security**        | Autenticação JWT, autorização baseada em roles                                   |
-| **config**          | Configurações do Spring (CORS, Security, MongoDB)                                |
+| **config**          | Seed de dados iniciais na inicialização da aplicação                             |
 | **exception**       | Tratamento centralizado de exceções com respostas padronizadas                   |
 
 | Camada (Frontend)   | Responsabilidade                                                                 |

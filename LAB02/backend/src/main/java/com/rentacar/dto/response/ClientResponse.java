@@ -1,5 +1,7 @@
 package com.rentacar.dto.response;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import com.rentacar.model.Address;
 import com.rentacar.model.Employer;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class ClientResponse {
 
     private String id;

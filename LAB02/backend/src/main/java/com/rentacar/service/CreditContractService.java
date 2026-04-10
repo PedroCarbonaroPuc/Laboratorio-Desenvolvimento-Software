@@ -10,11 +10,10 @@ import com.rentacar.model.enums.ContractStatus;
 import com.rentacar.model.enums.OrderStatus;
 import com.rentacar.repository.CreditContractRepository;
 import com.rentacar.repository.RentalOrderRepository;
-import org.springframework.stereotype.Service;
-
+import jakarta.inject.Singleton;
 import java.time.LocalDateTime;
 
-@Service
+@Singleton
 public class CreditContractService {
 
     private final CreditContractRepository creditContractRepository;
@@ -53,7 +52,7 @@ public class CreditContractService {
         contract = creditContractRepository.save(contract);
 
         order.setCreditContractId(contract.getId());
-        rentalOrderRepository.save(order);
+        rentalOrderRepository.update(order);
 
         return toResponse(contract);
     }

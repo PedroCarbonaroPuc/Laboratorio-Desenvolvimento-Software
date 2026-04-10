@@ -2,49 +2,49 @@ package com.rentacar.service;
 
 import com.rentacar.dto.response.AgentResponse;
 import com.rentacar.exception.ResourceNotFoundException;
-import com.rentacar.model.Agent;
-import com.rentacar.repository.AgentRepository;
-import org.springframework.stereotype.Service;
+import com.rentacar.model.User;
+import com.rentacar.repository.UserRepository;
+import jakarta.inject.Singleton;
 
 import java.time.LocalDateTime;
 
-@Service
+@Singleton
 public class AgentService {
 
-    private final AgentRepository agentRepository;
+    private final UserRepository userRepository;
 
-    public AgentService(AgentRepository agentRepository) {
-        this.agentRepository = agentRepository;
+    public AgentService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public AgentResponse getAgentById(String id) {
-        Agent agent = agentRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agente não encontrado"));
-        return toResponse(agent);
+        return toResponse(user);
     }
 
-    public AgentResponse updateAgent(String id, Agent updates) {
-        Agent agent = agentRepository.findById(id)
+    public AgentResponse updateAgent(String id, User updates) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agente não encontrado"));
 
-        if (updates.getCompanyName() != null) agent.setCompanyName(updates.getCompanyName());
-        if (updates.getAddress() != null) agent.setAddress(updates.getAddress());
-        if (updates.getPhone() != null) agent.setPhone(updates.getPhone());
-        agent.setUpdatedAt(LocalDateTime.now());
+        if (updates.getCompanyName() != null) user.setCompanyName(updates.getCompanyName());
+        if (updates.getAddress() != null) user.setAddress(updates.getAddress());
+        if (updates.getPhone() != null) user.setPhone(updates.getPhone());
+        user.setUpdatedAt(LocalDateTime.now());
 
-        agent = agentRepository.save(agent);
-        return toResponse(agent);
+        user = userRepository.update(user);
+        return toResponse(user);
     }
 
-    private AgentResponse toResponse(Agent agent) {
+    private AgentResponse toResponse(User user) {
         return AgentResponse.builder()
-                .id(agent.getId())
-                .email(agent.getEmail())
-                .companyName(agent.getCompanyName())
-                .cnpj(agent.getCnpj())
-                .address(agent.getAddress())
-                .phone(agent.getPhone())
-                .createdAt(agent.getCreatedAt())
+                .id(user.getId())
+                .email(user.getEmail())
+                .companyName(user.getCompanyName())
+                .cnpj(user.getCnpj())
+                .address(user.getAddress())
+                .phone(user.getPhone())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

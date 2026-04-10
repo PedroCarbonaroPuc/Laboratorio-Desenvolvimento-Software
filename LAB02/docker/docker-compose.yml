@@ -17,7 +17,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/rentacar
+      MONGODB_URI: mongodb://mongodb:27017/rentacar
       JWT_SECRET: chave-secreta-jwt-producao-alterar-em-ambiente-real
       JWT_EXPIRATION: "86400000"
     depends_on:

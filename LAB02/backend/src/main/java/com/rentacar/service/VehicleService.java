@@ -6,12 +6,12 @@ import com.rentacar.exception.BusinessException;
 import com.rentacar.exception.ResourceNotFoundException;
 import com.rentacar.model.Vehicle;
 import com.rentacar.repository.VehicleRepository;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+@Singleton
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
@@ -78,7 +78,7 @@ public class VehicleService {
         vehicle.setOwnerId(request.getOwnerId());
         vehicle.setDailyRate(request.getDailyRate());
 
-        vehicle = vehicleRepository.save(vehicle);
+        vehicle = vehicleRepository.update(vehicle);
         return toResponse(vehicle);
     }
 
@@ -98,7 +98,7 @@ public class VehicleService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado"));
         vehicle.setAvailable(available);
-        vehicleRepository.save(vehicle);
+        vehicleRepository.update(vehicle);
     }
 
     private VehicleResponse toResponse(Vehicle vehicle) {

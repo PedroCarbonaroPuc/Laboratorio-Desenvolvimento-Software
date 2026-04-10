@@ -1,10 +1,13 @@
 package com.rentacar.dto.loadtest;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@Serdeable
 public class LoadTestResult {
     private String architecture;        // SPRING_MVC or SPRING_WEBFLUX
     private String testType;

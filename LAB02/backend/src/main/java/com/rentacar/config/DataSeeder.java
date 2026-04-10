@@ -5,45 +5,40 @@ import com.rentacar.model.enums.OrderStatus;
 import com.rentacar.model.enums.OwnerType;
 import com.rentacar.model.enums.UserRole;
 import com.rentacar.repository.*;
+import com.rentacar.security.PasswordEncoder;
+import io.micronaut.context.event.StartupEvent;
+import io.micronaut.runtime.event.annotation.EventListener;
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
-public class DataSeeder implements CommandLineRunner {
+@Singleton
+public class DataSeeder {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
-    private final ClientRepository clientRepository;
-    private final AgentRepository agentRepository;
-    private final AdminRepository adminRepository;
+    private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final RentalOrderRepository rentalOrderRepository;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataSeeder(ClientRepository clientRepository, AgentRepository agentRepository,
-                      AdminRepository adminRepository,
-                      VehicleRepository vehicleRepository, RentalOrderRepository rentalOrderRepository,
-                      UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.clientRepository = clientRepository;
-        this.agentRepository = agentRepository;
-        this.adminRepository = adminRepository;
+    public DataSeeder(UserRepository userRepository,
+                      VehicleRepository vehicleRepository,
+                      RentalOrderRepository rentalOrderRepository,
+                      PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
         this.rentalOrderRepository = rentalOrderRepository;
-        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public void run(String... args) {
+    @EventListener
+    public void onStartup(StartupEvent event) {
         if (userRepository.count() > 0) {
             log.info("╔══════════════════════════════════════════════════════╗");
             log.info("║  Banco de dados já possui dados. Seed ignorado.     ║");
@@ -59,7 +54,7 @@ public class DataSeeder implements CommandLineRunner {
         String adminPassword = "admin123";
 
         // ── Admin (Dono da empresa) ──────────────────────────────
-        Admin admin = Admin.builder()
+        User admin = User.builder()
                 .email("admin@rentacar.com")
                 .password(passwordEncoder.encode(adminPassword))
                 .role(UserRole.ADMIN)
@@ -67,10 +62,10 @@ public class DataSeeder implements CommandLineRunner {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        adminRepository.save(admin);
+        userRepository.save(admin);
 
         // ── Agent (Empresa) ──────────────────────────────────────
-        Agent agent = Agent.builder()
+        User agent = User.builder()
                 .email("empresa@rentacar.com")
                 .password(passwordEncoder.encode(agentPassword))
                 .role(UserRole.AGENT)
@@ -89,7 +84,7 @@ public class DataSeeder implements CommandLineRunner {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        agent = agentRepository.save(agent);
+        agent = userRepository.save(agent);
 
         // ── Client (Pessoa Física) ───────────────────────────────
         Employer employer1 = Employer.builder()
@@ -104,7 +99,7 @@ public class DataSeeder implements CommandLineRunner {
                 .income(new BigDecimal("3500.00"))
                 .build();
 
-        Client client = Client.builder()
+        User client = User.builder()
                 .email("cliente@rentacar.com")
                 .password(passwordEncoder.encode(clientPassword))
                 .role(UserRole.CLIENT)
@@ -125,7 +120,7 @@ public class DataSeeder implements CommandLineRunner {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        client = clientRepository.save(client);
+        client = userRepository.save(client);
 
         // ── Veículos (10 unidades) ───────────────────────────────
         Vehicle v1 = createVehicle("REG-001", 2023, "Toyota", "Corolla Cross", "ABC1D23", OwnerType.COMPANY, agent.getId(), new BigDecimal("189.90"));
@@ -143,7 +138,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // Pedido 1 — ACTIVE (Corolla Cross)
         v1.setAvailable(false);
-        vehicleRepository.save(v1);
+        vehicleRepository.update(v1);
 
         RentalOrder order1 = RentalOrder.builder()
                 .clientId(client.getId())
@@ -165,7 +160,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // Pedido 2 — ACTIVE (Civic)
         v2.setAvailable(false);
-        vehicleRepository.save(v2);
+        vehicleRepository.update(v2);
 
         RentalOrder order2 = RentalOrder.builder()
                 .clientId(client.getId())

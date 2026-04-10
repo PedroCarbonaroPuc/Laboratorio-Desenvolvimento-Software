@@ -1,5 +1,7 @@
 package com.rentacar.dto.request;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class CreateRentalOrderRequest {
 
     @NotBlank(message = "ID do veículo é obrigatório")

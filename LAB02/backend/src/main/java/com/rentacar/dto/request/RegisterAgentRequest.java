@@ -1,5 +1,7 @@
 package com.rentacar.dto.request;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import com.rentacar.model.Address;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class RegisterAgentRequest {
 
     @NotBlank(message = "Razão social é obrigatória")

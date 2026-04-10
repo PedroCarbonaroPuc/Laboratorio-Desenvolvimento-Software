@@ -5,17 +5,18 @@ import com.rentacar.dto.request.FinancialAnalysisRequest;
 import com.rentacar.dto.request.UpdateRentalOrderRequest;
 import com.rentacar.dto.response.RentalOrderResponse;
 import com.rentacar.service.RentalOrderService;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/rental-orders")
+@Controller("/api/rental-orders")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class RentalOrderController {
 
     private final RentalOrderService rentalOrderService;
@@ -24,73 +25,73 @@ public class RentalOrderController {
         this.rentalOrderService = rentalOrderService;
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<RentalOrderResponse> createOrder(Authentication authentication,
-                                                           @Valid @RequestBody CreateRentalOrderRequest request) {
+    @Post
+    @Secured({"CLIENT"})
+    public HttpResponse<RentalOrderResponse> createOrder(Authentication authentication,
+                                                         @Valid @Body CreateRentalOrderRequest request) {
         String clientId = authentication.getName();
         RentalOrderResponse response = rentalOrderService.createOrder(clientId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return HttpResponse.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/my")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<List<RentalOrderResponse>> getMyOrders(Authentication authentication) {
+    @Get("/my")
+    @Secured({"CLIENT"})
+    public HttpResponse<List<RentalOrderResponse>> getMyOrders(Authentication authentication) {
         String clientId = authentication.getName();
-        return ResponseEntity.ok(rentalOrderService.getClientOrders(clientId));
+        return HttpResponse.ok(rentalOrderService.getClientOrders(clientId));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<RentalOrderResponse> getOrder(@PathVariable String id) {
-        return ResponseEntity.ok(rentalOrderService.getOrderById(id));
+    @Get("/{id}")
+    public HttpResponse<RentalOrderResponse> getOrder(@PathVariable String id) {
+        return HttpResponse.ok(rentalOrderService.getOrderById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<RentalOrderResponse> updateOrder(@PathVariable String id,
-                                                           Authentication authentication,
-                                                           @Valid @RequestBody UpdateRentalOrderRequest request) {
+    @Put("/{id}")
+    public HttpResponse<RentalOrderResponse> updateOrder(@PathVariable String id,
+                                                         Authentication authentication,
+                                                         @Valid @Body UpdateRentalOrderRequest request) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(rentalOrderService.updateOrder(id, userId, request));
+        return HttpResponse.ok(rentalOrderService.updateOrder(id, userId, request));
     }
 
-    @PatchMapping("/{id}/cancel")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<RentalOrderResponse> cancelOrder(@PathVariable String id,
-                                                           Authentication authentication) {
+    @Patch("/{id}/cancel")
+    @Secured({"CLIENT"})
+    public HttpResponse<RentalOrderResponse> cancelOrder(@PathVariable String id,
+                                                         Authentication authentication) {
         String clientId = authentication.getName();
-        return ResponseEntity.ok(rentalOrderService.cancelOrder(id, clientId));
+        return HttpResponse.ok(rentalOrderService.cancelOrder(id, clientId));
     }
 
-    @GetMapping("/pending")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<List<RentalOrderResponse>> getPendingOrders() {
-        return ResponseEntity.ok(rentalOrderService.getPendingOrders());
+    @Get("/pending")
+    @Secured({"AGENT"})
+    public HttpResponse<List<RentalOrderResponse>> getPendingOrders() {
+        return HttpResponse.ok(rentalOrderService.getPendingOrders());
     }
 
-    @GetMapping("/all")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<List<RentalOrderResponse>> getAllOrders() {
-        return ResponseEntity.ok(rentalOrderService.getAllOrders());
+    @Get("/all")
+    @Secured({"AGENT"})
+    public HttpResponse<List<RentalOrderResponse>> getAllOrders() {
+        return HttpResponse.ok(rentalOrderService.getAllOrders());
     }
 
-    @PatchMapping("/{id}/analyze")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<RentalOrderResponse> analyzeOrder(@PathVariable String id,
-                                                            Authentication authentication,
-                                                            @Valid @RequestBody FinancialAnalysisRequest request) {
+    @Patch("/{id}/analyze")
+    @Secured({"AGENT"})
+    public HttpResponse<RentalOrderResponse> analyzeOrder(@PathVariable String id,
+                                                          Authentication authentication,
+                                                          @Valid @Body FinancialAnalysisRequest request) {
         String agentId = authentication.getName();
-        return ResponseEntity.ok(rentalOrderService.analyzeOrder(id, agentId, request));
+        return HttpResponse.ok(rentalOrderService.analyzeOrder(id, agentId, request));
     }
 
-    @PatchMapping("/{id}/approve")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<RentalOrderResponse> approveOrder(@PathVariable String id) {
-        return ResponseEntity.ok(rentalOrderService.approveOrder(id));
+    @Patch("/{id}/approve")
+    @Secured({"AGENT"})
+    public HttpResponse<RentalOrderResponse> approveOrder(@PathVariable String id) {
+        return HttpResponse.ok(rentalOrderService.approveOrder(id));
     }
 
-    @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<RentalOrderResponse> rejectOrder(@PathVariable String id) {
-        return ResponseEntity.ok(rentalOrderService.rejectOrder(id));
+    @Patch("/{id}/reject")
+    @Secured({"AGENT"})
+    public HttpResponse<RentalOrderResponse> rejectOrder(@PathVariable String id) {
+        return HttpResponse.ok(rentalOrderService.rejectOrder(id));
     }
 }

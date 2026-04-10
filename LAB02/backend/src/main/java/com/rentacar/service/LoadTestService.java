@@ -5,13 +5,12 @@ import com.rentacar.dto.loadtest.LoadTestRequest;
 import com.rentacar.dto.loadtest.LoadTestResult;
 import com.rentacar.repository.RentalOrderRepository;
 import com.rentacar.repository.VehicleRepository;
-import com.rentacar.repository.reactive.ReactiveRentalOrderRepository;
-import com.rentacar.repository.reactive.ReactiveVehicleRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import io.micronaut.http.sse.Event;
+import jakarta.inject.Singleton;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
-import java.io.IOException;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.time.Duration;
@@ -21,77 +20,77 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Service
+@Singleton
 public class LoadTestService {
 
     private final VehicleRepository vehicleRepository;
     private final RentalOrderRepository rentalOrderRepository;
-    private final ReactiveVehicleRepository reactiveVehicleRepository;
-    private final ReactiveRentalOrderRepository reactiveRentalOrderRepository;
+    private final com.mongodb.reactivestreams.client.MongoClient reactiveMongoClient;
 
     public LoadTestService(
             VehicleRepository vehicleRepository,
             RentalOrderRepository rentalOrderRepository,
-            ReactiveVehicleRepository reactiveVehicleRepository,
-            ReactiveRentalOrderRepository reactiveRentalOrderRepository) {
+            com.mongodb.reactivestreams.client.MongoClient reactiveMongoClient) {
         this.vehicleRepository = vehicleRepository;
         this.rentalOrderRepository = rentalOrderRepository;
-        this.reactiveVehicleRepository = reactiveVehicleRepository;
-        this.reactiveRentalOrderRepository = reactiveRentalOrderRepository;
+        this.reactiveMongoClient = reactiveMongoClient;
     }
 
-    public void executeTest(LoadTestRequest request, SseEmitter emitter) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                sendEvent(emitter, LoadTestEvent.builder()
-                        .type("progress").architecture("SPRING_MVC")
-                        .completedRequests(0).totalRequests(request.getTotalRequests())
-                        .message("Iniciando teste com Spring MVC (Bloqueante)...")
-                        .build());
-
-                LoadTestResult mvcResult = runBlockingTest(request, emitter);
-                sendEvent(emitter, LoadTestEvent.builder()
-                        .type("result").architecture("SPRING_MVC")
-                        .result(mvcResult)
-                        .completedRequests(request.getTotalRequests())
-                        .totalRequests(request.getTotalRequests())
-                        .message("Teste Spring MVC concluído")
-                        .build());
-
-                Thread.sleep(500);
-
-                sendEvent(emitter, LoadTestEvent.builder()
-                        .type("progress").architecture("SPRING_WEBFLUX")
-                        .completedRequests(0).totalRequests(request.getTotalRequests())
-                        .message("Iniciando teste com Spring WebFlux (Reativo)...")
-                        .build());
-
-                LoadTestResult webfluxResult = runReactiveTest(request, emitter);
-                sendEvent(emitter, LoadTestEvent.builder()
-                        .type("result").architecture("SPRING_WEBFLUX")
-                        .result(webfluxResult)
-                        .completedRequests(request.getTotalRequests())
-                        .totalRequests(request.getTotalRequests())
-                        .message("Teste Spring WebFlux concluído")
-                        .build());
-
-                sendEvent(emitter, LoadTestEvent.builder()
-                        .type("complete").message("Todos os testes concluídos")
-                        .build());
-
-                emitter.complete();
-            } catch (Exception e) {
+    public Flux<Event<LoadTestEvent>> executeTest(LoadTestRequest request) {
+        return Flux.create(sink -> {
+            CompletableFuture.runAsync(() -> {
                 try {
-                    sendEvent(emitter, LoadTestEvent.builder()
-                            .type("error").message("Erro: " + e.getMessage())
+                    sendEvent(sink, LoadTestEvent.builder()
+                            .type("progress").architecture("MICRONAUT_SYNC")
+                            .completedRequests(0).totalRequests(request.getTotalRequests())
+                            .message("Iniciando teste com Micronaut Sync (Bloqueante)...")
                             .build());
-                    emitter.complete();
-                } catch (Exception ignored) {}
-            }
+
+                    LoadTestResult syncResult = runBlockingTest(request, sink);
+                    sendEvent(sink, LoadTestEvent.builder()
+                            .type("result").architecture("MICRONAUT_SYNC")
+                            .result(syncResult)
+                            .completedRequests(request.getTotalRequests())
+                            .totalRequests(request.getTotalRequests())
+                            .message("Teste Micronaut Sync concluído")
+                            .build());
+
+                    Thread.sleep(500);
+
+                    sendEvent(sink, LoadTestEvent.builder()
+                            .type("progress").architecture("MICRONAUT_REACTIVE")
+                            .completedRequests(0).totalRequests(request.getTotalRequests())
+                            .message("Iniciando teste com Micronaut Reactive (Reativo)...")
+                            .build());
+
+                    LoadTestResult reactiveResult = runReactiveTest(request, sink);
+                    sendEvent(sink, LoadTestEvent.builder()
+                            .type("result").architecture("MICRONAUT_REACTIVE")
+                            .result(reactiveResult)
+                            .completedRequests(request.getTotalRequests())
+                            .totalRequests(request.getTotalRequests())
+                            .message("Teste Micronaut Reactive concluído")
+                            .build());
+
+                    sendEvent(sink, LoadTestEvent.builder()
+                            .type("complete").message("Todos os testes concluídos")
+                            .build());
+
+                    sink.complete();
+                } catch (Exception e) {
+                    try {
+                        sendEvent(sink, LoadTestEvent.builder()
+                                .type("error").message("Erro: " + e.getMessage())
+                                .build());
+                        sink.complete();
+                    } catch (Exception ignored) {}
+                }
+            });
         });
     }
 
-    private LoadTestResult runBlockingTest(LoadTestRequest request, SseEmitter emitter) throws Exception {
+    private LoadTestResult runBlockingTest(LoadTestRequest request, FluxSink<Event<LoadTestEvent>> sink) throws Exception {
+
         int total = request.getTotalRequests();
         int concurrency = request.getConcurrencyLevel();
         String testType = request.getTestType();
@@ -131,8 +130,8 @@ public class LoadTestService {
                         try {
                             double avg = latencies.isEmpty() ? 0 :
                                     latencies.stream().mapToLong(Long::longValue).average().orElse(0);
-                            sendEvent(emitter, LoadTestEvent.builder()
-                                    .type("progress").architecture("SPRING_MVC")
+                            sendEvent(sink, LoadTestEvent.builder()
+                                    .type("progress").architecture("MICRONAUT_SYNC")
                                     .completedRequests(done).totalRequests(total)
                                     .currentAvgMs(Math.round(avg * 100.0) / 100.0)
                                     .build());
@@ -150,12 +149,13 @@ public class LoadTestService {
         long memAfter = runtime.totalMemory() - runtime.freeMemory();
         executor.shutdown();
 
-        return buildResult("SPRING_MVC", testType, total, errors.get(),
+        return buildResult("MICRONAUT_SYNC", testType, total, errors.get(),
                 totalTime, latencies, peakThreads.get(),
                 Math.max(0, (memAfter - memBefore) / (1024 * 1024)));
     }
 
-    private LoadTestResult runReactiveTest(LoadTestRequest request, SseEmitter emitter) throws Exception {
+    private LoadTestResult runReactiveTest(LoadTestRequest request, FluxSink<Event<LoadTestEvent>> sink) {
+
         int total = request.getTotalRequests();
         int concurrency = request.getConcurrencyLevel();
         String testType = request.getTestType();
@@ -189,8 +189,8 @@ public class LoadTestService {
                                     try {
                                         double avg = latencies.isEmpty() ? 0 :
                                                 latencies.stream().mapToLong(Long::longValue).average().orElse(0);
-                                        sendEvent(emitter, LoadTestEvent.builder()
-                                                .type("progress").architecture("SPRING_WEBFLUX")
+                                        sendEvent(sink, LoadTestEvent.builder()
+                                                .type("progress").architecture("MICRONAUT_REACTIVE")
                                                 .completedRequests(done).totalRequests(total)
                                                 .currentAvgMs(Math.round(avg * 100.0) / 100.0)
                                                 .build());
@@ -206,7 +206,7 @@ public class LoadTestService {
         long totalTime = (System.nanoTime() - startTime) / 1_000_000;
         long memAfter = runtime.totalMemory() - runtime.freeMemory();
 
-        return buildResult("SPRING_WEBFLUX", testType, total, errors.get(),
+        return buildResult("MICRONAUT_REACTIVE", testType, total, errors.get(),
                 totalTime, latencies, peakThreads.get(),
                 Math.max(0, (memAfter - memBefore) / (1024 * 1024)));
     }
@@ -251,22 +251,23 @@ public class LoadTestService {
     }
 
     private Mono<Void> executeReactiveOperation(String testType, int ioDelay) {
+        var db = reactiveMongoClient.getDatabase("rentacar");
         return switch (testType) {
             case "database_read" ->
-                    reactiveVehicleRepository.findAll().collectList()
-                            .then(reactiveRentalOrderRepository.findAll().collectList())
+                    Flux.from(db.getCollection("vehicles").find()).collectList()
+                            .then(Flux.from(db.getCollection("rental_orders").find()).collectList())
                             .then();
             case "io_simulation" ->
                     Mono.delay(Duration.ofMillis(ioDelay)).then();
             case "concurrent_load" ->
-                    reactiveVehicleRepository.findAll().collectList()
-                            .then(reactiveRentalOrderRepository.findAll().collectList())
+                    Flux.from(db.getCollection("vehicles").find()).collectList()
+                            .then(Flux.from(db.getCollection("rental_orders").find()).collectList())
                             .then(Mono.delay(Duration.ofMillis(10)))
                             .then();
             case "mixed_workload" ->
-                    reactiveVehicleRepository.findAll().collectList()
+                    Flux.from(db.getCollection("vehicles").find()).collectList()
                             .then(Mono.delay(Duration.ofMillis(ioDelay > 0 ? ioDelay : 50)))
-                            .then(reactiveRentalOrderRepository.count())
+                            .then(Mono.from(db.getCollection("rental_orders").countDocuments()))
                             .map(count -> {
                                 double sum = 0;
                                 for (int j = 0; j < 10000; j++) {
@@ -327,9 +328,7 @@ public class LoadTestService {
         return sortedLatencies.get(index);
     }
 
-    private void sendEvent(SseEmitter emitter, LoadTestEvent event) {
-        try {
-            emitter.send(SseEmitter.event().data(event));
-        } catch (IOException ignored) {}
+    private void sendEvent(FluxSink<Event<LoadTestEvent>> sink, LoadTestEvent event) {
+        sink.next(Event.of(event));
     }
 }

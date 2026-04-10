@@ -3,14 +3,14 @@ package com.rentacar.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import io.micronaut.context.annotation.Value;
+import jakarta.inject.Singleton;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-@Component
+@Singleton
 public class JwtTokenProvider {
 
     private final SecretKey key;

@@ -3,14 +3,15 @@ package com.rentacar.controller;
 import com.rentacar.dto.request.CreateCreditContractRequest;
 import com.rentacar.dto.response.CreditContractResponse;
 import com.rentacar.service.CreditContractService;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/credit-contracts")
+@Controller("/api/credit-contracts")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class CreditContractController {
 
     private final CreditContractService creditContractService;
@@ -19,21 +20,21 @@ public class CreditContractController {
         this.creditContractService = creditContractService;
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<CreditContractResponse> createContract(
-            @Valid @RequestBody CreateCreditContractRequest request) {
+    @Post
+    @Secured({"AGENT"})
+    public HttpResponse<CreditContractResponse> createContract(
+            @Valid @Body CreateCreditContractRequest request) {
         CreditContractResponse response = creditContractService.createContract(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return HttpResponse.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CreditContractResponse> getContract(@PathVariable String id) {
-        return ResponseEntity.ok(creditContractService.getContractById(id));
+    @Get("/{id}")
+    public HttpResponse<CreditContractResponse> getContract(@PathVariable String id) {
+        return HttpResponse.ok(creditContractService.getContractById(id));
     }
 
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<CreditContractResponse> getContractByOrder(@PathVariable String orderId) {
-        return ResponseEntity.ok(creditContractService.getContractByOrderId(orderId));
+    @Get("/order/{orderId}")
+    public HttpResponse<CreditContractResponse> getContractByOrder(@PathVariable String orderId) {
+        return HttpResponse.ok(creditContractService.getContractByOrderId(orderId));
     }
 }

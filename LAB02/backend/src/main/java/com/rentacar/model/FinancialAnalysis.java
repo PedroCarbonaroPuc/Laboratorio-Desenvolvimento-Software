@@ -1,5 +1,6 @@
 package com.rentacar.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class FinancialAnalysis {
 
     private String agentId;

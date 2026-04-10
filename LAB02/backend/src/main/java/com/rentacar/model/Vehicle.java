@@ -1,13 +1,14 @@
 package com.rentacar.model;
 
 import com.rentacar.model.enums.OwnerType;
+import io.micronaut.data.annotation.GeneratedValue;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,10 +17,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "vehicles")
+@Serdeable
+@MappedEntity("vehicles")
 public class Vehicle {
 
     @Id
+    @GeneratedValue
     private String id;
 
     private String registrationNumber;
@@ -30,7 +33,6 @@ public class Vehicle {
 
     private String model;
 
-    @Indexed(unique = true)
     private String licensePlate;
 
     private OwnerType ownerType;

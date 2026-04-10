@@ -1,0 +1,41 @@
+micronaut:
+  application:
+    name: rent-a-car
+  server:
+    port: ${SERVER_PORT:8080}
+    cors:
+      enabled: true
+      configurations:
+        ui:
+          allowed-origins:
+            - http://localhost:5173
+            - http://localhost:3000
+            - http://localhost
+          allowed-methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          allowed-headers:
+            - "*"
+          allow-credentials: true
+          max-age: 3600
+  security:
+    authentication: bearer
+    intercept-url-map:
+      - pattern: /api/auth/**
+        http-method: POST
+        access:
+          - isAnonymous()
+    token:
+      bearer:
+        enabled: true
+
+mongodb:
+  uri: ${MONGODB_URI:mongodb://localhost:27017/rentacar}
+
+jwt:
+  secret: ${JWT_SECRET:s3cr3tK3yF0rD3vEl0pm3ntT3st1ngPurp0s3sOnlyCh4ng3InPr0d}
+  expiration: ${JWT_EXPIRATION:86400000}

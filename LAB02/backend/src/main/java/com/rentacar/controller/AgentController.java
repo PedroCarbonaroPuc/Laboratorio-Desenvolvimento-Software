@@ -1,15 +1,18 @@
 package com.rentacar.controller;
 
 import com.rentacar.dto.response.AgentResponse;
-import com.rentacar.model.Agent;
+import com.rentacar.model.User;
 import com.rentacar.service.AgentService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Put;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 
-@RestController
-@RequestMapping("/api/agents")
+@Controller("/api/agents")
+@Secured({"AGENT"})
 public class AgentController {
 
     private final AgentService agentService;
@@ -18,18 +21,16 @@ public class AgentController {
         this.agentService = agentService;
     }
 
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<AgentResponse> getMyProfile(Authentication authentication) {
+    @Get("/me")
+    public HttpResponse<AgentResponse> getMyProfile(Authentication authentication) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(agentService.getAgentById(userId));
+        return HttpResponse.ok(agentService.getAgentById(userId));
     }
 
-    @PutMapping("/me")
-    @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<AgentResponse> updateMyProfile(Authentication authentication,
-                                                         @RequestBody Agent updates) {
+    @Put("/me")
+    public HttpResponse<AgentResponse> updateMyProfile(Authentication authentication,
+                                                       @Body User updates) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(agentService.updateAgent(userId, updates));
+        return HttpResponse.ok(agentService.updateAgent(userId, updates));
     }
 }

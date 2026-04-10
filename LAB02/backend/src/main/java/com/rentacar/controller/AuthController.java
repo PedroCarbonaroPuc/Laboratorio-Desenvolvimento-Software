@@ -5,16 +5,17 @@ import com.rentacar.dto.request.RegisterAgentRequest;
 import com.rentacar.dto.request.RegisterClientRequest;
 import com.rentacar.dto.response.AuthResponse;
 import com.rentacar.service.AuthService;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/api/auth")
+@Controller("/api/auth")
+@Secured(SecurityRule.IS_ANONYMOUS)
 public class AuthController {
 
     private final AuthService authService;
@@ -23,21 +24,21 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register/client")
-    public ResponseEntity<AuthResponse> registerClient(@Valid @RequestBody RegisterClientRequest request) {
+    @Post("/register/client")
+    public HttpResponse<AuthResponse> registerClient(@Valid @Body RegisterClientRequest request) {
         AuthResponse response = authService.registerClient(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return HttpResponse.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/register/agent")
-    public ResponseEntity<AuthResponse> registerAgent(@Valid @RequestBody RegisterAgentRequest request) {
+    @Post("/register/agent")
+    public HttpResponse<AuthResponse> registerAgent(@Valid @Body RegisterAgentRequest request) {
         AuthResponse response = authService.registerAgent(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return HttpResponse.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    @Post("/login")
+    public HttpResponse<AuthResponse> login(@Valid @Body LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        return HttpResponse.ok(response);
     }
 }

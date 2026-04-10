@@ -5,11 +5,13 @@
 | Tecnologia         | Versão  | Descrição                              |
 |--------------------|---------|----------------------------------------|
 | Java               | 21      | Linguagem principal                    |
-| Spring Boot        | 3.2.x   | Framework principal                    |
-| Spring Security    | 6.x     | Autenticação e autorização             |
-| Spring Data MongoDB| 4.x     | Acesso ao banco de dados               |
-| Spring WebFlux     | 3.2.x   | Módulo reativo (testes de carga)       |
-| Spring Data MongoDB Reactive | 4.x | Driver reativo do MongoDB      |
+| Micronaut          | 4.7.6   | Framework principal                    |
+| Micronaut Security | 4.11.2  | Autenticação e autorização (Bearer JWT)|
+| Micronaut Data MongoDB | 4.10.5 | Acesso ao banco de dados            |
+| Micronaut Reactor  | 3.5.3   | Módulo reativo (testes de carga)       |
+| MongoDB Reactive Streams Driver | 5.x | Driver reativo do MongoDB     |
+| Micronaut Serde Jackson | 2.12.1 | Serialização/desserialização JSON  |
+| Micronaut Validation | 4.8.1 | Validação com Jakarta Validation       |
 | MongoDB            | 7.0     | Banco de dados NoSQL                   |
 | JWT (jjwt)         | 0.12.x  | Geração e validação de tokens          |
 | Lombok             | 1.18.x  | Redução de boilerplate                 |
@@ -19,13 +21,10 @@
 
 ```
 src/main/java/com/rentacar/
-├── RentACarApplication.java          # Ponto de entrada
-├── config/                           # Configurações Spring
-│   ├── SecurityConfig.java
-│   ├── MongoConfig.java
-│   ├── WebConfig.java
-│   └── DataSeeder.java              # Seed automático de dados iniciais
-├── controller/                       # Endpoints REST
+├── RentACarApplication.java          # Ponto de entrada (Micronaut.run)
+├── config/                           # Configurações
+│   └── DataSeeder.java              # Seed automático de dados iniciais (@EventListener)
+├── controller/                       # Endpoints REST (@Controller)
 │   ├── AuthController.java
 │   ├── ClientController.java
 │   ├── AgentController.java
@@ -33,36 +32,40 @@ src/main/java/com/rentacar/
 │   ├── VehicleController.java
 │   ├── RentalOrderController.java
 │   ├── CreditContractController.java
-│   └── LoadTestController.java       # SSE streaming - testes de carga
-├── dto/                              # Data Transfer Objects
+│   └── LoadTestController.java       # SSE streaming - testes de carga (Flux<Event>)
+├── dto/                              # Data Transfer Objects (@Serdeable)
 │   ├── request/
+│   │   ├── LoginRequest.java
+│   │   ├── RegisterClientRequest.java
+│   │   ├── RegisterAgentRequest.java
+│   │   ├── CreateRentalOrderRequest.java
+│   │   ├── UpdateRentalOrderRequest.java
+│   │   ├── FinancialAnalysisRequest.java
+│   │   ├── CreateVehicleRequest.java
+│   │   └── CreateCreditContractRequest.java
 │   ├── response/
 │   │   ├── AuthResponse.java
-│   │   └── ... (11 Response DTOs)
+│   │   ├── ClientResponse.java
+│   │   ├── AgentResponse.java
+│   │   ├── AdminResponse.java
+│   │   ├── UserSummaryResponse.java
+│   │   ├── AdminDashboardResponse.java
+│   │   ├── AdminClientDetailResponse.java
+│   │   ├── AdminAgentDetailResponse.java
+│   │   ├── VehicleResponse.java
+│   │   ├── RentalOrderResponse.java
+│   │   └── CreditContractResponse.java
 │   └── loadtest/                     # DTOs para testes de carga
 │       ├── LoadTestRequest.java
 │       ├── LoadTestResult.java
 │       └── LoadTestEvent.java
-│       ├── ClientResponse.java
-│       ├── AgentResponse.java
-│       ├── AdminResponse.java
-│       ├── UserSummaryResponse.java
-│       ├── AdminDashboardResponse.java
-│       ├── AdminClientDetailResponse.java
-│       ├── AdminAgentDetailResponse.java
-│       ├── VehicleResponse.java
-│       ├── RentalOrderResponse.java
-│       └── CreditContractResponse.java
-├── exception/                        # Tratamento de exceções
+├── exception/                        # Tratamento de exceções (@Error global)
 │   ├── GlobalExceptionHandler.java
 │   ├── ResourceNotFoundException.java
 │   ├── BusinessException.java
 │   └── UnauthorizedException.java
-├── model/                            # Entidades do domínio
-│   ├── User.java
-│   ├── Client.java
-│   ├── Agent.java
-│   ├── Admin.java
+├── model/                            # Entidades do domínio (@MappedEntity)
+│   ├── User.java                     # Entidade unificada (Client/Agent/Admin via campo role)
 │   ├── Vehicle.java
 │   ├── RentalOrder.java
 │   ├── CreditContract.java
@@ -70,22 +73,16 @@ src/main/java/com/rentacar/
 │   ├── Employer.java
 │   ├── FinancialAnalysis.java
 │   └── enums/
-├── repository/                       # Acesso ao MongoDB
+├── repository/                       # Acesso ao MongoDB (@MongoRepository)
 │   ├── UserRepository.java
-│   ├── ClientRepository.java
-│   ├── AgentRepository.java
-│   ├── AdminRepository.java
 │   ├── VehicleRepository.java
 │   ├── RentalOrderRepository.java
-│   ├── CreditContractRepository.java
-│   └── reactive/                     # Repositórios reativos (WebFlux)
-│       ├── ReactiveVehicleRepository.java
-│       └── ReactiveRentalOrderRepository.java
+│   └── CreditContractRepository.java
 ├── security/                         # JWT e autenticação
-│   ├── JwtTokenProvider.java
-│   ├── JwtAuthenticationFilter.java
-│   └── UserDetailsServiceImpl.java
-└── service/                          # Lógica de negócio
+│   ├── JwtTokenProvider.java         # Geração de tokens (@Singleton)
+│   ├── JwtTokenValidator.java        # Validação de tokens (TokenValidator<HttpRequest>)
+│   └── PasswordEncoder.java          # BCrypt encoding (@Singleton)
+└── service/                          # Lógica de negócio (@Singleton)
     ├── AuthService.java
     ├── ClientService.java
     ├── AgentService.java
@@ -169,32 +166,31 @@ src/main/java/com/rentacar/
 | POST   | `/api/load-tests/run`           | Executar teste comparativo (SSE streaming) | ADMIN   |
 
 **Detalhes do endpoint SSE:**
-- Retorna `text/event-stream` (Server-Sent Events)
-- Timeout de 5 minutos (`SseEmitter` com 300.000ms)
+- Retorna `text/event-stream` (Server-Sent Events) via `Flux<Event<LoadTestEvent>>`
+- Streaming reativo com Micronaut Reactor (Publisher/Flux)
 - Eventos emitidos: `progress` (andamento), `result` (métricas finais), `error`, `complete`
 - Parâmetros de entrada: `testType` (database_read, io_simulation, concurrent_load, mixed_workload), `totalRequests`, `concurrencyLevel`, `ioDelayMs`
 
-## 4. Módulo Reativo (Spring WebFlux)
+## 4. Módulo Reativo (Micronaut Reactor)
 
-O sistema inclui um módulo de **programação reativa** com Spring WebFlux para comparação de performance com o módulo bloqueante tradicional (Spring MVC). Ambos coexistem no mesmo projeto — o Spring Boot opera em modo servlet (MVC) por padrão.
+O sistema inclui um módulo de **programação reativa** com Micronaut Reactor para comparação de performance com o módulo bloqueante tradicional (Micronaut Sync). O Micronaut opera em modo Netty por padrão, suportando ambos os paradigmas no mesmo processo.
 
 ### Componentes Reativos
 
 | Componente                           | Descrição                                                |
 |--------------------------------------|----------------------------------------------------------|
-| `ReactiveVehicleRepository`          | Repository reativo do MongoDB para veículos (`Flux<Vehicle>`) |
-| `ReactiveRentalOrderRepository`      | Repository reativo do MongoDB para pedidos (`Flux<RentalOrder>`) |
+| `MongoClient` (Reactive Streams)     | Driver reativo do MongoDB para operações não-bloqueantes |
 | `LoadTestService`                    | Engine de execução de testes bloqueantes e reativos       |
-| `LoadTestController`                 | Endpoint SSE para streaming de resultados em tempo real    |
+| `LoadTestController`                 | Endpoint SSE para streaming de resultados em tempo real (`Flux<Event>`) |
 
 ### Tipos de Teste
 
-| Tipo              | Bloqueante (MVC)                           | Reativo (WebFlux)                               |
+| Tipo              | Bloqueante (Sync)                          | Reativo (Reactive)                              |
 |-------------------|--------------------------------------------|--------------------------------------------------|
-| database_read     | `vehicleRepository.findAll()` + `orderRepo.findAll()` | `reactiveVehicleRepo.findAll()` + `reactiveOrderRepo.findAll()` |
+| database_read     | `vehicleRepository.findAll()` + `orderRepo.findAll()` | `MongoClient` reactive `find().toPublisher()` |
 | io_simulation     | `Thread.sleep(ioDelayMs)`                  | `Mono.delay(Duration.ofMillis(ioDelayMs))`       |
-| concurrent_load   | findAll() + Thread.sleep(10ms)             | Flux findAll() + Mono.delay(10ms)                |
-| mixed_workload    | findAll() + sleep + CPU burn               | Flux findAll() + Mono.delay + CPU burn           |
+| concurrent_load   | findAll() + Thread.sleep(10ms)             | Reactive find + Mono.delay(10ms)                |
+| mixed_workload    | findAll() + sleep + CPU burn               | Reactive find + Mono.delay + CPU burn           |
 
 ### Métricas Coletadas
 
@@ -207,7 +203,7 @@ O sistema inclui um módulo de **programação reativa** com Spring WebFlux para
 
 - **Autenticação:** JWT Bearer Token no header `Authorization`.
 - **Hashing de senha:** BCrypt com salt.
-- **Autorização:** Role-based (CLIENT, AGENT, ADMIN) com Spring Security.
+- **Autorização:** Role-based (CLIENT, AGENT, ADMIN) com Micronaut Security (`@Secured`).
 - **CORS:** Configurado para aceitar requisições do frontend (localhost:3000, localhost:5173, localhost).
 - **Endpoints públicos:** Apenas `/api/auth/**`.
 - **Endpoints administrativos:** `/api/admin/**` restritos exclusivamente ao role ADMIN.

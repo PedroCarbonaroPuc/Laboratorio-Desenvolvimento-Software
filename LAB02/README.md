@@ -14,7 +14,7 @@
   <tr>
     <td width="800px">
       <div align="justify">
-        O <b>RentACar</b> é um sistema web full-stack para gerenciamento de aluguel de automóveis, desenvolvido como projeto acadêmico na disciplina de <i>Laboratório de Desenvolvimento de Software</i> da <a href="https://www.pucminas.br/">PUC Minas</a>. O sistema permite que <b>clientes</b> consultem veículos disponíveis, criem pedidos de aluguel e acompanhem o status de suas solicitações, enquanto <b>agentes (empresas)</b> avaliam financeiramente os pedidos, aprovam ou rejeitam contratos e gerenciam a frota de veículos. O <b>administrador geral (dono da empresa)</b> possui um painel completo de gestão com visão de todos os usuários, métricas do sistema e controle administrativo. Desenvolvido com <b>Java 21/Spring Boot</b> no backend e <b>React/TypeScript</b> no frontend, o projeto adota boas práticas de arquitetura em camadas, autenticação JWT, banco de dados MongoDB e orquestração via Docker, promovendo uma experiência de <i>desenvolvimento profissional</i> desde a documentação até o deploy.
+        O <b>RentACar</b> é um sistema web full-stack para gerenciamento de aluguel de automóveis, desenvolvido como projeto acadêmico na disciplina de <i>Laboratório de Desenvolvimento de Software</i> da <a href="https://www.pucminas.br/">PUC Minas</a>. O sistema permite que <b>clientes</b> consultem veículos disponíveis, criem pedidos de aluguel e acompanhem o status de suas solicitações, enquanto <b>agentes (empresas)</b> avaliam financeiramente os pedidos, aprovam ou rejeitam contratos e gerenciam a frota de veículos. O <b>administrador geral (dono da empresa)</b> possui um painel completo de gestão com visão de todos os usuários, métricas do sistema e controle administrativo. Desenvolvido com <b>Java 21/Micronaut</b> no backend e <b>React/TypeScript</b> no frontend, o projeto adota boas práticas de arquitetura em camadas, autenticação JWT, banco de dados MongoDB e orquestração via Docker, promovendo uma experiência de <i>desenvolvimento profissional</i> desde a documentação até o deploy.
       </div>
     </td>
     <td>
@@ -29,7 +29,7 @@
 
 ## 🚧 Status do Projeto
 
-[![Versão](https://img.shields.io/badge/Versão-v1.0.0-blue?style=for-the-badge)](https://github.com/) ![Java](https://img.shields.io/badge/Java-21-007ec6?style=for-the-badge&logo=openjdk&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2.5-007ec6?style=for-the-badge&logo=springboot&logoColor=white) ![React](https://img.shields.io/badge/React-18-007ec6?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5-007ec6?style=for-the-badge&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-5-007ec6?style=for-the-badge&logo=vite&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-7-007ec6?style=for-the-badge&logo=mongodb&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-Compose-007ec6?style=for-the-badge&logo=docker&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-007ec6?style=for-the-badge&logo=tailwindcss&logoColor=white)
+[![Versão](https://img.shields.io/badge/Versão-v1.0.0-blue?style=for-the-badge)](https://github.com/) ![Java](https://img.shields.io/badge/Java-21-007ec6?style=for-the-badge&logo=openjdk&logoColor=white) ![Micronaut](https://img.shields.io/badge/Micronaut-4.7.6-007ec6?style=for-the-badge&logo=micronaut&logoColor=white) ![React](https://img.shields.io/badge/React-18-007ec6?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5-007ec6?style=for-the-badge&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-5-007ec6?style=for-the-badge&logo=vite&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-7-007ec6?style=for-the-badge&logo=mongodb&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-Compose-007ec6?style=for-the-badge&logo=docker&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-007ec6?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
 ---
 
@@ -41,13 +41,13 @@
 - [Instalação e Execução](#-instalação-e-execução)
   - [Pré-requisitos](#pré-requisitos)
   - [Variáveis de Ambiente](#-variáveis-de-ambiente)
-    - [1 Back-end (Spring Boot)](#1-back-end-spring-boot)
+    - [1 Back-end (Micronaut)](#1-back-end-micronaut)
     - [2 Front-end (React, Vite)](#2-front-end-react-vite)
   - [Instalação de Dependências](#-instalação-de-dependências)
     - [Front-end (React)](#front-end-react)
-    - [Back-end (Spring Boot)](#back-end-spring-boot)
+    - [Back-end (Micronaut)](#back-end-micronaut)
   - [Como Executar a Aplicação](#-como-executar-a-aplicação)
-    - [Terminal 1: Back-end (Spring Boot)](#terminal-1-back-end-spring-boot)
+    - [Terminal 1: Back-end (Micronaut)](#terminal-1-back-end-micronaut)
     - [Terminal 2: Front-end (React, Vite)](#terminal-2-front-end-react-vite)
     - [Execução Local Completa com Docker Compose](#-execução-local-completa-com-docker-compose)
     - [Passos para build, inicialização e execução](#-passos-para-build-inicialização-e-execução)
@@ -86,7 +86,7 @@ O sistema possui três perfis de acesso:
 - 🛡️ **Painel Administrativo:** Painel de gestão de usuários para o Admin Geral com métricas, listagem, detalhamento de clientes/agentes e exclusão de contas.
 - ✏️ **Edição de Perfil:** Modal para atualização de dados cadastrais acessado pela barra de navegação lateral, com campos específicos por perfil e máscaras de entrada.
 - 🌓 **Modo Claro/Escuro:** Alternância de tema (dark/light mode) em toda a interface, com persistência em localStorage e detecção automática de preferência do sistema.
-- 🧪 **Testes de Carga (WebFlux vs MVC):** Módulo exclusivo do Admin Geral para comparação em tempo real entre Spring MVC (bloqueante) e Spring WebFlux (reativo). Inclui 4 tipos de teste, streaming SSE com progresso em tempo real, métricas detalhadas (P50/P95/P99, throughput, threads, memória), barras de comparação visual, análise automática dos resultados e histórico de testes.
+- 🧪 **Testes de Carga (Reactive vs Sync):** Módulo exclusivo do Admin Geral para comparação em tempo real entre Micronaut Sync (bloqueante) e Micronaut Reactive (reativo). Inclui 4 tipos de teste, streaming SSE com progresso em tempo real, métricas detalhadas (P50/P95/P99, throughput, threads, memória), barras de comparação visual, análise automática dos resultados e histórico de testes.
 - 🚗 **Catálogo de Veículos:** Listagem de veículos disponíveis com busca por marca, modelo e faixa de preço.
 - 📋 **Gestão de Pedidos:** Criação, consulta, modificação e cancelamento de pedidos de aluguel com cálculo automático de valores.
 - 📊 **Avaliação Financeira:** Agentes analisam dados financeiros do cliente (profissão, empregadores, rendimentos) e emitem parecer.
@@ -118,11 +118,12 @@ O sistema possui três perfis de acesso:
 | Tecnologia              | Versão | Descrição                                |
 |-------------------------|--------|------------------------------------------|
 | **Java**                | 21     | Linguagem principal (JDK)                |
-| **Spring Boot**         | 3.2.5  | Framework principal para API REST        |
-| **Spring Security**     | 6.x    | Autenticação e autorização               |
-| **Spring Data MongoDB** | 4.x    | Acesso e mapeamento ao banco de dados    |
-| **Spring WebFlux**      | 3.2.5  | Módulo reativo para testes de performance |
-| **Spring Data MongoDB Reactive** | 4.x | Driver reativo do MongoDB para WebFlux |
+| **Micronaut**           | 4.7.6  | Framework principal para API REST        |
+| **Micronaut Security**  | 4.11.2 | Autenticação e autorização (Bearer JWT)   |
+| **Micronaut Data MongoDB** | 4.10.5 | Acesso e mapeamento ao banco de dados |
+| **Micronaut Reactor**   | 3.5.3  | Módulo reativo para testes de performance |
+| **MongoDB Reactive Streams Driver** | 5.x | Driver reativo do MongoDB para testes |
+| **Micronaut Serde Jackson** | 2.12.1 | Serialização/desserialização JSON     |
 | **MongoDB**             | 7.0    | Banco de dados NoSQL orientado a documentos |
 | **JWT (jjwt)**          | 0.12.5 | Geração e validação de tokens JWT        |
 | **Lombok**              | 1.18.x | Redução de boilerplate em classes Java   |
@@ -148,10 +149,10 @@ O backend segue o padrão **Controller → Service → Repository**, com DTOs pa
 
 - **Controller:** Recebe requisições HTTP, valida entrada, delega para services e retorna DTOs.
 - **Service:** Implementa regras de negócio, orquestra operações e gerencia transações.
-- **Repository:** Abstrai acesso ao MongoDB via Spring Data.
-- **Model:** Entidades do domínio com herança (`User → Client/Agent`) e objetos de valor embarcados (`Address`, `Employer`, `FinancialAnalysis`).
-- **Security:** Autenticação JWT stateless com filtro de requisições e autorização baseada em roles (`CLIENT`, `AGENT`, `ADMIN`).
-- **Módulo Reativo (WebFlux):** Spring WebFlux coexiste com Spring MVC para testes comparativos de performance. Repositórios reativos (`ReactiveMongoRepository`) + `LoadTestService` executam testes bloqueantes e reativos com streaming SSE em tempo real.
+- **Repository:** Abstrai acesso ao MongoDB via Micronaut Data.
+- **Model:** Entidade unificada `User` (Client/Agent/Admin diferenciados pelo campo `role`) e objetos de valor embarcados (`Address`, `Employer`, `FinancialAnalysis`).
+- **Security:** Autenticação JWT stateless com `JwtTokenValidator` e autorização baseada em roles (`CLIENT`, `AGENT`, `ADMIN`) via `@Secured`.
+- **Módulo Reativo (Reactor):** Micronaut Reactor coexiste com operações síncronas para testes comparativos de performance. MongoDB Reactive Streams Driver + `LoadTestService` executam testes bloqueantes e reativos com streaming SSE em tempo real (`Flux<Event>`).
 
 ### Frontend — Componentização React
 
@@ -167,7 +168,7 @@ O backend segue o padrão **Controller → Service → Repository**, com DTOs pa
 - **DTO Pattern** — Separação entre modelo e transporte
 - **Service Layer** — Encapsulamento de regras de negócio
 - **Builder Pattern** (via Lombok `@SuperBuilder`) — Construção de objetos complexos com herança
-- **Interceptor Pattern** — Filtro JWT para autenticação automática
+- **Interceptor Pattern** — `JwtTokenValidator` para autenticação JWT automática
 
 ### API Endpoints
 
@@ -211,7 +212,7 @@ O backend segue o padrão **Controller → Service → Repository**, com DTOs pa
 
 ### Pré-requisitos
 
-* **Java JDK:** Versão **21** ou superior (necessário para o Back-end Spring Boot)
+* **Java JDK:** Versão **21** ou superior (necessário para o Back-end Micronaut)
 * **Node.js:** Versão LTS (v18.x ou superior) (necessário para o Front-end React)
 * **Gerenciador de Pacotes:** npm
 * **Docker & Docker Compose** (recomendado para execução completa)
@@ -221,16 +222,16 @@ O backend segue o padrão **Controller → Service → Repository**, com DTOs pa
 
 ### 🔑 Variáveis de Ambiente
 
-#### 1 Back-end (Spring Boot)
+#### 1 Back-end (Micronaut)
 
-Configure no `application.properties` ou como variáveis de ambiente do sistema:
+Configure no `application.yml` ou como variáveis de ambiente do sistema:
 
 | Variável                     | Descrição                          | Padrão                                     |
 |------------------------------|------------------------------------|----------------------------------------------|
 | `MONGODB_URI`                | URI de conexão com o MongoDB       | `mongodb://localhost:27017/rentacar`          |
 | `JWT_SECRET`                 | Chave secreta para assinatura JWT  | (chave de desenvolvimento, alterar em prod)   |
 | `JWT_EXPIRATION`             | Tempo de expiração do token (ms)   | `86400000` (24 horas)                         |
-| `SERVER_PORT`                | Porta do servidor Spring Boot      | `8080`                                        |
+| `SERVER_PORT`                | Porta do servidor Micronaut       | `8080`                                        |
 
 #### 2 Front-end (React, Vite)
 
@@ -257,9 +258,9 @@ npm install
 cd ..
 ```
 
-#### Back-end (Spring Boot)
+#### Back-end (Micronaut)
 
-O Spring Boot utiliza o **Maven Wrapper** (`./mvnw`) para gerenciar dependências:
+O Micronaut utiliza o **Maven Wrapper** (`./mvnw`) para gerenciar dependências:
 
 ```bash
 cd backend
@@ -273,11 +274,11 @@ cd ..
 
 Execute a aplicação em modo de desenvolvimento em **dois terminais separados** (com MongoDB rodando via Docker ou localmente).
 
-#### Terminal 1: Back-end (Spring Boot)
+#### Terminal 1: Back-end (Micronaut)
 
 ```bash
 cd backend
-./mvnw spring-boot:run
+./mvnw mn:run
 ```
 🚀 *O Back-end estará disponível em **http://localhost:8080**.*
 
@@ -356,7 +357,7 @@ docker ps
 ./docker-down.sh
 ```
 
-✅ **Em resumo:** Usar **Docker Compose** simplifica a execução do ambiente completo, isolando as dependências de **Java 21 (Spring Boot)**, **Node.js (React)** e **MongoDB** em containers independentes.
+✅ **Em resumo:** Usar **Docker Compose** simplifica a execução do ambiente completo, isolando as dependências de **Java 21 (Micronaut)**, **Node.js (React)** e **MongoDB** em containers independentes.
 
 ---
 
@@ -370,33 +371,34 @@ docker ps
 ├── /docs                        # 📚 Documentação técnica do sistema
 │   ├── /modelagem
 │   │   ├── casos-de-uso.md      # 📋 Diagrama e especificação de 16 casos de uso
-│   │   ├── historias-usuario.md  # 📖 19 histórias de usuário em 9 épicos (93 story points)
-│   │   ├── diagrama-classes.md   # 🧬 Diagrama de classes com 10 entidades e 4 enums
-│   │   └── diagrama-pacotes.md   # 📦 Diagramas de pacotes (backend e frontend)
+│   │   ├── historias-usuario.md  # 📖 20 histórias de usuário em 10 épicos (108 story points)
+│   │   ├── diagrama-classes.md   # 🧬 Diagrama de classes com entidade User unificada
+│   │   ├── diagrama-pacotes.md   # 📦 Diagramas de pacotes (backend e frontend)
+│   │   ├── diagrama-componentes.md # 🔧 Diagrama de componentes do sistema
+│   │   └── diagrama-implantacao.md # 🚀 Diagrama de implantação (Docker)
 │   ├── /backend
 │   │   └── arquitetura.md       # 🖥️ Arquitetura, endpoints e segurança do backend
 │   └── /frontend
 │       └── arquitetura.md       # 💻 Arquitetura, roteamento e design system do frontend
 │
-├── /backend                     # 📁 API REST Spring Boot
+├── /backend                     # 📁 API REST Micronaut
 │   ├── .gitignore               # 🧹 Ignora target/, .idea/, .env
 │   ├── Dockerfile               # 🐳 Build multi-stage (JDK 21 → JRE 21)
-│   ├── pom.xml                  # 🛠️ Dependências Maven
+│   ├── pom.xml                  # 🛠️ Dependências Maven (Micronaut BOM)
 │   └── /src/main/java/com/rentacar
 │       ├── RentACarApplication.java
-│       ├── /config              # 🔧 SecurityConfig, MongoConfig, WebConfig, DataSeeder
-│       ├── /controller          # 🎮 8 REST Controllers (Auth, Client, Agent, Vehicle, RentalOrder, CreditContract, Admin, LoadTest)
+│       ├── /config              # 🔧 DataSeeder (seed de dados iniciais)
+│       ├── /controller          # 🎮 8 REST Controllers (@Controller, @Secured)
 │       ├── /dto
 │       │   ├── /request         # ✉️ 8 Request DTOs com validação Jakarta
-│       │   ├── /response        # ✉️ 11 Response DTOs (inclui Admin, Dashboard, UserSummary, Detail DTOs)
-│       │   └── /loadtest        # 📊 3 DTOs para testes de carga (Request, Result, Event)
-│       ├── /exception           # 💥 GlobalExceptionHandler + exceções customizadas
-│       ├── /model               # 🧬 Entidades (User, Client, Agent, Admin, Vehicle, RentalOrder, CreditContract)
-│       │   └── /enums           # 📊 UserRole (CLIENT, AGENT, ADMIN), OrderStatus, OwnerType, ContractStatus
-│       ├── /repository          # 🗄️ 7 Repositórios Spring Data MongoDB (inclui AdminRepository)
-│       │   └── /reactive        # ⚡ 2 Repositórios reativos (ReactiveVehicleRepository, ReactiveRentalOrderRepository)
-│       ├── /security            # 🛡️ JWT Provider, Filter, UserDetailsService
-│       └── /service             # ⚙️ 8 Services com regras de negócio (inclui AdminService, LoadTestService)
+│       │   ├── /response        # ✉️ 11 Response DTOs (@Serdeable)
+│       │   └── /loadtest        # 📊 3 DTOs para testes de carga
+│       ├── /exception           # 💥 GlobalExceptionHandler (@Error global) + exceções customizadas
+│       ├── /model               # 🧬 Entidades (User unificado, Vehicle, RentalOrder, CreditContract)
+│       │   └── /enums           # 📊 UserRole, OrderStatus, OwnerType, ContractStatus
+│       ├── /repository          # 🗄️ 4 Repositórios Micronaut Data MongoDB (@MongoRepository)
+│       ├── /security            # 🛡️ JwtTokenProvider, JwtTokenValidator, PasswordEncoder
+│       └── /service             # ⚙️ 8 Services (@Singleton) com regras de negócio
 │
 ├── /frontend                    # 📁 SPA React/TypeScript
 │   ├── .gitignore               # 🧹 Ignora node_modules/, dist/, .env
@@ -516,9 +518,9 @@ curl -X GET 'http://localhost:8080/api/vehicles' \
 
 * 📖 **React:** [Documentação Oficial do React](https://react.dev/reference/react)
 * 📖 **Vite:** [Guia de Configuração do Vite](https://vitejs.dev/config/)
-* 📖 **Spring Boot:** [Documentação Oficial do Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/)
-* 📖 **Spring Security:** [Documentação do Spring Security](https://docs.spring.io/spring-security/reference/)
-* 📖 **Spring Data MongoDB:** [Documentação do Spring Data MongoDB](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/)
+* 📖 **Micronaut:** [Documentação Oficial do Micronaut](https://docs.micronaut.io/latest/guide/)
+* 📖 **Micronaut Security:** [Documentação do Micronaut Security](https://micronaut-projects.github.io/micronaut-security/latest/guide/)
+* 📖 **Micronaut Data MongoDB:** [Documentação do Micronaut Data MongoDB](https://micronaut-projects.github.io/micronaut-data/latest/guide/#mongo)
 * 📖 **Tailwind CSS:** [Documentação do Tailwind CSS](https://tailwindcss.com/docs)
 * 📖 **Docker:** [Documentação de Referência do Docker](https://docs.docker.com/)
 * 📖 **JWT (jjwt):** [Documentação do JJWT](https://github.com/jwtk/jjwt)
@@ -529,6 +531,8 @@ curl -X GET 'http://localhost:8080/api/vehicles' \
   * [Histórias de Usuário](./docs/modelagem/historias-usuario.md)
   * [Diagrama de Classes](./docs/modelagem/diagrama-classes.md)
   * [Diagrama de Pacotes](./docs/modelagem/diagrama-pacotes.md)
+  * [Diagrama de Componentes](./docs/modelagem/diagrama-componentes.md)
+  * [Diagrama de Implantação](./docs/modelagem/diagrama-implantacao.md)
   * [Arquitetura Backend](./docs/backend/arquitetura.md)
   * [Arquitetura Frontend](./docs/frontend/arquitetura.md)
 

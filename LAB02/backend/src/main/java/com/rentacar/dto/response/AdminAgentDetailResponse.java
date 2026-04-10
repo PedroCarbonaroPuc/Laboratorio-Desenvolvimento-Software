@@ -1,5 +1,7 @@
 package com.rentacar.dto.response;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class AdminAgentDetailResponse {
 
     private AgentResponse agent;

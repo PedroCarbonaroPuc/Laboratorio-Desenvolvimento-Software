@@ -1,5 +1,7 @@
 package com.rentacar.dto.request;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class CreateCreditContractRequest {
 
     @NotBlank(message = "ID do pedido de aluguel é obrigatório")

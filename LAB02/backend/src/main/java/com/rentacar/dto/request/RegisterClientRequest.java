@@ -1,5 +1,7 @@
 package com.rentacar.dto.request;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import com.rentacar.model.Address;
 import com.rentacar.model.Employer;
 import jakarta.validation.constraints.Email;
@@ -15,6 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class RegisterClientRequest {
 
     @NotBlank(message = "Nome é obrigatório")

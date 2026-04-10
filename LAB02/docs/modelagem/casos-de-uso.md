@@ -261,12 +261,12 @@ flowchart LR
 
 ---
 
-### UC16 — Executar Testes de Carga Comparativos (MVC vs WebFlux)
+### UC16 — Executar Testes de Carga Comparativos (Sync vs Reactive)
 
 | Campo             | Descrição                                                                  |
 |-------------------|----------------------------------------------------------------------------|
 | **Ator Principal** | Admin Geral                                                               |
 | **Pré-condição**   | Admin autenticado                                                         |
 | **Pós-condição**   | Testes executados com métricas comparativas exibidas em tempo real         |
-| **Fluxo Principal** | 1. Admin acessa a seção "Testes de Carga" na sidebar. <br> 2. Sistema exibe cards explicativos das arquiteturas Spring MVC (bloqueante) e Spring WebFlux (reativo). <br> 3. Admin seleciona tipo de teste (Leitura de Banco, Simulação de I/O, Carga Concorrente ou Carga Mista). <br> 4. Admin configura parâmetros: total de requisições, nível de concorrência e latência simulada. <br> 5. Admin clica em "Executar Teste". <br> 6. Sistema executa o teste primeiro no modo bloqueante (MVC) e depois no reativo (WebFlux), enviando progresso em tempo real via SSE. <br> 7. Barras de progresso são atualizadas em tempo real para ambas as arquiteturas. <br> 8. Ao concluir, sistema exibe: cards de métricas resumidas, tabela comparativa detalhada, barras de latência visual e análise textual automática dos resultados. <br> 9. Admin pode executar novos testes; resultados anteriores são mantidos no histórico. |
+| **Fluxo Principal** | 1. Admin acessa a seção "Testes de Carga" na sidebar. <br> 2. Sistema exibe cards explicativos das arquiteturas Micronaut Sync (bloqueante) e Micronaut Reactive (reativo). <br> 3. Admin seleciona tipo de teste (Leitura de Banco, Simulação de I/O, Carga Concorrente ou Carga Mista). <br> 4. Admin configura parâmetros: total de requisições, nível de concorrência e latência simulada. <br> 5. Admin clica em "Executar Teste". <br> 6. Sistema executa o teste primeiro no modo bloqueante (Sync) e depois no reativo (Reactive), enviando progresso em tempo real via SSE. <br> 7. Barras de progresso são atualizadas em tempo real para ambas as arquiteturas. <br> 8. Ao concluir, sistema exibe: cards de métricas resumidas, tabela comparativa detalhada, barras de latência visual e análise textual automática dos resultados. <br> 9. Admin pode executar novos testes; resultados anteriores são mantidos no histórico. |
 | **Fluxo Alternativo** | 5a. Admin clica em "Parar Teste" durante a execução → SSE é cancelado e teste interrompido. <br> 6a. Erro de conexão → Mensagem de erro exibida ao admin. |

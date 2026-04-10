@@ -1,5 +1,7 @@
 package com.rentacar.dto.response;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import com.rentacar.model.FinancialAnalysis;
 import com.rentacar.model.enums.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Serdeable
 public class RentalOrderResponse {
 
     private String id;
