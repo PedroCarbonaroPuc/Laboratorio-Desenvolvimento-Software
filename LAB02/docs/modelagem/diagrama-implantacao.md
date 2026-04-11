@@ -68,6 +68,8 @@ graph TB
     style MongoContainer fill:#e8f5e9,stroke:#4CAF50
 ```
 
+![Diagrama de Implantação](images/DiagramaDeImplantação.png)
+
 ---
 
 ## 3. Nós de Implantação

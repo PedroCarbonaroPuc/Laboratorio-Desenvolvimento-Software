@@ -21,6 +21,7 @@
         <jdk.version>21</jdk.version>
         <release.version>21</release.version>
         <micronaut.runtime>netty</micronaut.runtime>
+        <exec.mainClass>com.rentacar.RentACarApplication</exec.mainClass>
         <jjwt.version>0.12.5</jjwt.version>
     </properties>
 
@@ -126,6 +127,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- YAML config support -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
             <scope>runtime</scope>
         </dependency>
 

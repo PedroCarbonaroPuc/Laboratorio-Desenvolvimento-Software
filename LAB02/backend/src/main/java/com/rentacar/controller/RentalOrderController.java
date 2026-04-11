@@ -8,6 +8,8 @@ import com.rentacar.service.RentalOrderService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @Controller("/api/rental-orders")
 @Secured(SecurityRule.IS_AUTHENTICATED)
+@ExecuteOn(TaskExecutors.IO)
 public class RentalOrderController {
 
     private final RentalOrderService rentalOrderService;

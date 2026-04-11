@@ -5,11 +5,14 @@ import com.rentacar.model.User;
 import com.rentacar.service.AdminService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 
 @Controller("/api/admin")
 @Secured({"ADMIN"})
+@ExecuteOn(TaskExecutors.IO)
 public class AdminController {
 
     private final AdminService adminService;

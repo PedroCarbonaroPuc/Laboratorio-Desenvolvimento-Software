@@ -8,11 +8,14 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 
 @Controller("/api/agents")
 @Secured({"AGENT"})
+@ExecuteOn(TaskExecutors.IO)
 public class AgentController {
 
     private final AgentService agentService;

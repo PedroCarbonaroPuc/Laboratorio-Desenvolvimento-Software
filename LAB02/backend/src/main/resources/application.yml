@@ -2,7 +2,7 @@ micronaut:
   application:
     name: rent-a-car
   server:
-    port: ${SERVER_PORT:8080}
+    port: 8080
     cors:
       enabled: true
       configurations:
@@ -34,8 +34,8 @@ micronaut:
         enabled: true
 
 mongodb:
-  uri: ${MONGODB_URI:mongodb://localhost:27017/rentacar}
+  uri: mongodb://localhost:27017/rentacar
 
 jwt:
-  secret: ${JWT_SECRET:s3cr3tK3yF0rD3vEl0pm3ntT3st1ngPurp0s3sOnlyCh4ng3InPr0d}
-  expiration: ${JWT_EXPIRATION:86400000}
+  secret: s3cr3tK3yF0rD3vEl0pm3ntT3st1ngPurp0s3sOnlyCh4ng3InPr0d
+  expiration: 86400000

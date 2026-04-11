@@ -127,6 +127,8 @@ graph TB
     style Database fill:#e8f5e9,stroke:#4CAF50
 ```
 
+![Diagrama de Componentes](images/DiagramaDeComponentes.png)
+
 ---
 
 ## 3. Descrição dos Componentes

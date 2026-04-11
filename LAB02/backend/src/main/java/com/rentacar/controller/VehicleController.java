@@ -6,6 +6,8 @@ import com.rentacar.service.VehicleService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Controller("/api/vehicles")
 @Secured(SecurityRule.IS_AUTHENTICATED)
+@ExecuteOn(TaskExecutors.IO)
 public class VehicleController {
 
     private final VehicleService vehicleService;
