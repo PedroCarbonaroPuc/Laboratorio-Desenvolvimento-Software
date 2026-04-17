@@ -56,7 +56,7 @@ export default function Sidebar() {
             <Car className="w-5 h-5 text-white" />
           </div>
           <span
-            className={`text-xl font-bold text-white tracking-tight whitespace-nowrap transition-opacity duration-200 ${
+            className={`text-xl font-racing text-white tracking-tight whitespace-nowrap transition-opacity duration-200 ${
               isExpanded ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -178,7 +178,7 @@ export default function Sidebar() {
             }`}
           >
             <Star className="w-3 h-3 flex-shrink-0" />
-            <span>RentaCar v1.0</span>
+            <span className="font-racing">RentaCar</span> <span>v1.0</span>
           </div>
         </div>
       </aside>

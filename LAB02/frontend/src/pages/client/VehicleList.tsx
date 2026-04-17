@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utils/formatters';
 import Loading from '../../components/common/Loading';
 import Modal from '../../components/common/Modal';
 import { CarFront, Calendar, Search } from 'lucide-react';
+import { getCarImageUrl } from '../../utils/carImages';
 
 export default function VehicleListPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -61,7 +62,7 @@ export default function VehicleListPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary-900 dark:text-white">Veículos Disponíveis</h1>
+          <h1 className="text-2xl font-racing text-primary-900 dark:text-white">Veículos Disponíveis</h1>
           <p className="text-primary-500 dark:text-primary-400 mt-1">Escolha um veículo para alugar</p>
         </div>
         <div className="relative mt-4 sm:mt-0">
@@ -84,11 +85,19 @@ export default function VehicleListPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((vehicle) => (
-            <div key={vehicle.id} className="card overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-primary-800 to-primary-900 p-6">
-                <CarFront className="w-12 h-12 text-accent mb-3" />
-                <h3 className="text-white font-bold text-lg">{vehicle.brand} {vehicle.model}</h3>
-                <p className="text-primary-300 text-sm font-mono">{vehicle.licensePlate}</p>
+            <div key={vehicle.id} className="card overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+              <div className="relative h-48 bg-gradient-to-br from-primary-800 to-primary-900 overflow-hidden">
+                <img
+                  src={getCarImageUrl(vehicle.brand, vehicle.model, vehicle.year)}
+                  alt={`${vehicle.brand} ${vehicle.model}`}
+                  className="absolute inset-0 w-full h-full object-contain object-center drop-shadow-lg transition-transform duration-500 group-hover:scale-105 pt-4"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="text-white font-racing text-xl drop-shadow-md">{vehicle.brand} {vehicle.model}</h3>
+                  <p className="text-primary-300 text-sm font-mono">{vehicle.licensePlate}</p>
+                </div>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-2 gap-4 text-sm mb-6">
@@ -129,7 +138,7 @@ export default function VehicleListPage() {
         {selectedVehicle && (
           <div className="space-y-4">
             <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
-              <p className="font-semibold text-primary-900 dark:text-white">
+              <p className="font-racing text-lg text-primary-900 dark:text-white">
                 {selectedVehicle.brand} {selectedVehicle.model}
               </p>
               <p className="text-sm text-primary-500">

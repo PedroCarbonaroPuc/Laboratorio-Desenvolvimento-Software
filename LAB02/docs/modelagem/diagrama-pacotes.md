@@ -18,8 +18,8 @@ graph TB
         DB[(MongoDB)]
     end
 
-    FE -->|HTTP/REST JSON| BE
-    BE -->|Micronaut Data MongoDB| DB
+    FE -->|"HTTPS/REST\nJSON + Bearer JWT\n«IRestAPI»"| BE
+    BE -->|"MongoDB Wire Protocol\nMicronaut Data\n«IDataStore»"| DB
 ```
 
 ### Visualização do Diagrama — Visão Geral
@@ -130,11 +130,11 @@ graph TB
     end
 
     controller --> dto
-    controller --> service
-    service --> repository
-    service --> model
-    repository --> model
-    controller --> security
+    controller -->|"«usa»\nIService"| service
+    service -->|"«usa»\nIRepository"| repository
+    service -->|"«usa»\nIDomainModel"| model
+    repository -->|"«usa»\nIDomainModel"| model
+    controller -->|"«usa»\nISecurityProvider"| security
     security --> config
 ```
 
@@ -232,14 +232,14 @@ graph TB
         end
     end
 
-    pages --> components
-    pages --> api
-    pages --> hooks
-    pages --> contexts
-    components --> types
-    api --> types
-    hooks --> api
-    hooks --> contexts
+    pages -->|"«usa»\nIComponent"| components
+    pages -->|"«usa»\nIApiService"| api
+    pages -->|"«usa»\nIHook"| hooks
+    pages -->|"«usa»\nIContext"| contexts
+    components -->|"«usa»\nIType"| types
+    api -->|"«usa»\nIType"| types
+    hooks -->|"«usa»\nIApiService"| api
+    hooks -->|"«usa»\nIContext"| contexts
 ```
 
 ### Visualização do Diagrama — Frontend

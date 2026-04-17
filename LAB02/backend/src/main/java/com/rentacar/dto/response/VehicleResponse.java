@@ -1,5 +1,7 @@
 package com.rentacar.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.serde.annotation.Serdeable;
 
 import com.rentacar.model.enums.OwnerType;
@@ -16,8 +18,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Serdeable
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class VehicleResponse {
 
+    @JsonProperty("id")
     private String id;
     private String registrationNumber;
     private Integer year;

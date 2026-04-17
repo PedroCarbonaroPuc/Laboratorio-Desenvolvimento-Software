@@ -1,6 +1,8 @@
 package com.rentacar.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rentacar.model.enums.UserRole;
+import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
@@ -17,7 +19,7 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(onConstructor_ = @Creator)
 @AllArgsConstructor
 @Serdeable
 @MappedEntity("users")
@@ -25,6 +27,7 @@ public class User {
 
     @Id
     @GeneratedValue
+    @JsonProperty("_id")
     private String id;
 
     private String email;

@@ -4,8 +4,11 @@ import { Vehicle, OwnerType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import Loading from '../../components/common/Loading';
 import Modal from '../../components/common/Modal';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import Toast from '../../components/common/Toast';
 import { CarFront, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { maskCurrency, unmaskCurrency, numberToCurrencyDisplay } from '../../utils/masks';
+import { getCarImageUrl } from '../../utils/carImages';
 
 interface VehicleFormData {
   registrationNumber: string;
@@ -33,6 +36,9 @@ export default function VehicleManagementPage() {
   const [dailyRateDisplay, setDailyRateDisplay] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [deleteVehicleId, setDeleteVehicleId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState({ open: false, message: '' });
 
   const fetchVehicles = async () => {
     try {
@@ -98,12 +104,16 @@ export default function VehicleManagementPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja remover este veículo?')) return;
+    setDeleting(true);
     try {
       await vehiclesApi.delete(id);
+      setDeleteVehicleId(null);
       fetchVehicles();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Erro ao remover veículo');
+      setDeleteVehicleId(null);
+      setToast({ open: true, message: err.response?.data?.error || 'Erro ao remover veículo' });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -113,7 +123,7 @@ export default function VehicleManagementPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary-900 dark:text-white">Gestão de Veículos</h1>
+          <h1 className="text-2xl font-racing text-primary-900 dark:text-white">Gestão de Veículos</h1>
           <p className="text-primary-500 dark:text-primary-400 mt-1">Cadastre e gerencie veículos disponíveis</p>
         </div>
         <div className="flex items-center gap-3 mt-4 sm:mt-0">
@@ -156,11 +166,19 @@ export default function VehicleManagementPage() {
                 <tr key={vehicle.id} className="border-b border-primary-100 dark:border-primary-800 hover:bg-primary-50/50 dark:hover:bg-primary-800/50">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="bg-primary-100 p-2 rounded-lg">
-                        <CarFront className="w-5 h-5 text-primary-600" />
+                      <div className="bg-primary-100 dark:bg-primary-800 rounded-lg w-16 h-12 overflow-hidden flex-shrink-0">
+                        <img
+                          src={getCarImageUrl(vehicle.brand, vehicle.model, vehicle.year)}
+                          alt={`${vehicle.brand} ${vehicle.model}`}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-5 h-5 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M5 17H3v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2M9 17h6"/></svg></div>';
+                          }}
+                        />
                       </div>
                       <div>
-                        <p className="font-semibold text-primary-900 dark:text-white">{vehicle.brand} {vehicle.model}</p>
+                        <p className="font-racing text-base text-primary-900 dark:text-white">{vehicle.brand} {vehicle.model}</p>
                         <p className="text-xs text-primary-500 font-mono">{vehicle.registrationNumber}</p>
                       </div>
                     </div>
@@ -182,7 +200,7 @@ export default function VehicleManagementPage() {
                         className="p-2 hover:bg-primary-100 rounded-lg transition-colors">
                         <Pencil className="w-4 h-4 text-primary-500" />
                       </button>
-                      <button onClick={() => handleDelete(vehicle.id)}
+                      <button onClick={() => setDeleteVehicleId(vehicle.id)}
                         className="p-2 hover:bg-danger/10 rounded-lg transition-colors">
                         <Trash2 className="w-4 h-4 text-danger" />
                       </button>
@@ -272,6 +290,25 @@ export default function VehicleManagementPage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteVehicleId}
+        onClose={() => setDeleteVehicleId(null)}
+        onConfirm={() => deleteVehicleId && handleDelete(deleteVehicleId)}
+        title="Remover Veículo"
+        message="Tem certeza que deseja remover este veículo? Esta ação não pode ser desfeita."
+        confirmText="Sim, remover"
+        cancelText="Manter veículo"
+        variant="danger"
+        loading={deleting}
+      />
+
+      <Toast
+        isOpen={toast.open}
+        onClose={() => setToast({ open: false, message: '' })}
+        message={toast.message}
+        variant="error"
+      />
     </div>
   );
 }

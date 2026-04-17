@@ -1,6 +1,8 @@
 package com.rentacar.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rentacar.model.enums.OrderStatus;
+import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
@@ -17,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 
 @Data
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(onConstructor_ = @Creator)
 @AllArgsConstructor
 @Serdeable
 @MappedEntity("rental_orders")
@@ -25,6 +27,7 @@ public class RentalOrder {
 
     @Id
     @GeneratedValue
+    @JsonProperty("_id")
     private String id;
 
     private String clientId;

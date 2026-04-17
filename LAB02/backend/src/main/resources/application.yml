@@ -19,14 +19,18 @@ micronaut:
             - DELETE
             - OPTIONS
           allowed-headers:
-            - "*"
+            - Content-Type
+            - Authorization
+            - Accept
+            - Origin
+            - X-Requested-With
+          expose-headers:
+            - Authorization
           allow-credentials: true
           max-age: 3600
   security:
-    authentication: bearer
     intercept-url-map:
       - pattern: /api/auth/**
-        http-method: POST
         access:
           - isAnonymous()
     token:
@@ -34,8 +38,8 @@ micronaut:
         enabled: true
 
 mongodb:
-  uri: mongodb://localhost:27017/rentacar
+  uri: ${MONGODB_URI:mongodb://localhost:27017/rentacar}
 
 jwt:
-  secret: s3cr3tK3yF0rD3vEl0pm3ntT3st1ngPurp0s3sOnlyCh4ng3InPr0d
-  expiration: 86400000
+  secret: ${JWT_SECRET:s3cr3tK3yF0rD3vEl0pm3ntT3st1ngPurp0s3sOnlyCh4ng3InPr0d}
+  expiration: ${JWT_EXPIRATION:86400000}

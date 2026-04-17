@@ -5,6 +5,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import Badge from '../../components/common/Badge';
 import Loading from '../../components/common/Loading';
 import Modal from '../../components/common/Modal';
+import Toast from '../../components/common/Toast';
 import { ClipboardList, Search, CheckCircle, XCircle, FileSearch } from 'lucide-react';
 
 export default function OrderManagementPage() {
@@ -15,6 +16,7 @@ export default function OrderManagementPage() {
   const [selectedOrder, setSelectedOrder] = useState<RentalOrder | null>(null);
   const [analysisNotes, setAnalysisNotes] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [toast, setToast] = useState({ open: false, message: '', variant: 'error' as 'error' | 'success' });
 
   const fetchOrders = async () => {
     try {
@@ -37,7 +39,7 @@ export default function OrderManagementPage() {
       setAnalysisNotes('');
       fetchOrders();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Erro ao processar análise');
+      setToast({ open: true, message: err.response?.data?.error || 'Erro ao processar análise', variant: 'error' });
     } finally {
       setProcessing(false);
     }
@@ -50,7 +52,7 @@ export default function OrderManagementPage() {
       setSelectedOrder(null);
       fetchOrders();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Erro ao aprovar pedido');
+      setToast({ open: true, message: err.response?.data?.error || 'Erro ao aprovar pedido', variant: 'error' });
     } finally {
       setProcessing(false);
     }
@@ -63,7 +65,7 @@ export default function OrderManagementPage() {
       setSelectedOrder(null);
       fetchOrders();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Erro ao rejeitar pedido');
+      setToast({ open: true, message: err.response?.data?.error || 'Erro ao rejeitar pedido', variant: 'error' });
     } finally {
       setProcessing(false);
     }
@@ -133,7 +135,7 @@ export default function OrderManagementPage() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-primary-900 dark:text-white">{order.vehicleDescription}</h3>
+                    <h3 className="font-racing text-primary-900 dark:text-white">{order.vehicleDescription}</h3>
                     <Badge status={order.status} />
                   </div>
                   <div className="text-sm text-primary-500 dark:text-primary-400 space-y-1">
@@ -164,7 +166,7 @@ export default function OrderManagementPage() {
         {selectedOrder && (
           <div className="space-y-4">
             <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
-              <h4 className="font-semibold text-primary-900 dark:text-white">{selectedOrder.vehicleDescription}</h4>
+              <h4 className="font-racing text-primary-900 dark:text-white">{selectedOrder.vehicleDescription}</h4>
               <p className="text-sm text-primary-500 dark:text-primary-400 mt-1">
                 Cliente: {selectedOrder.clientName}
               </p>
@@ -256,6 +258,13 @@ export default function OrderManagementPage() {
           </div>
         )}
       </Modal>
+
+      <Toast
+        isOpen={toast.open}
+        onClose={() => setToast({ open: false, message: '', variant: 'error' })}
+        message={toast.message}
+        variant={toast.variant}
+      />
     </div>
   );
 }

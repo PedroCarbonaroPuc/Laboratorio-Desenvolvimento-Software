@@ -5,6 +5,8 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import Badge from '../../components/common/Badge';
 import Loading from '../../components/common/Loading';
 import Modal from '../../components/common/Modal';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import Toast from '../../components/common/Toast';
 import { FileText, Eye, XCircle } from 'lucide-react';
 
 export default function MyOrdersPage() {
@@ -13,6 +15,8 @@ export default function MyOrdersPage() {
   const [filter, setFilter] = useState<OrderStatus | 'ALL'>('ALL');
   const [selectedOrder, setSelectedOrder] = useState<RentalOrder | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  const [cancelOrderId, setCancelOrderId] = useState<string | null>(null);
+  const [toast, setToast] = useState({ open: false, message: '' });
 
   const fetchOrders = async () => {
     try {
@@ -28,14 +32,15 @@ export default function MyOrdersPage() {
   useEffect(() => { fetchOrders(); }, []);
 
   const handleCancel = async (orderId: string) => {
-    if (!confirm('Tem certeza que deseja cancelar este pedido?')) return;
     setCancelling(true);
     try {
       await ordersApi.cancel(orderId);
+      setCancelOrderId(null);
       setSelectedOrder(null);
       fetchOrders();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Erro ao cancelar pedido');
+      setCancelOrderId(null);
+      setToast({ open: true, message: err.response?.data?.error || 'Erro ao cancelar pedido' });
     } finally {
       setCancelling(false);
     }
@@ -88,7 +93,7 @@ export default function MyOrdersPage() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-primary-900 dark:text-white">{order.vehicleDescription}</h3>
+                    <h3 className="font-racing text-primary-900 dark:text-white">{order.vehicleDescription}</h3>
                     <span>Período: {formatDate(order.startDate)} — {formatDate(order.endDate)}</span>
                     <span>{order.rentalDays} dias</span>
                     <span className="font-semibold text-primary-900">{formatCurrency(order.totalAmount)}</span>
@@ -103,7 +108,7 @@ export default function MyOrdersPage() {
                   </button>
                   {(order.status === 'PENDING' || order.status === 'UNDER_ANALYSIS') && (
                     <button
-                      onClick={() => handleCancel(order.id)}
+                      onClick={() => setCancelOrderId(order.id)}
                       className="btn-danger flex items-center gap-2 text-sm py-2"
                     >
                       <XCircle className="w-4 h-4" /> Cancelar
@@ -124,7 +129,7 @@ export default function MyOrdersPage() {
         {selectedOrder && (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <h3 className="font-semibold text-lg text-primary-900 dark:text-white">{selectedOrder.vehicleDescription}</h3>
+              <h3 className="font-racing text-lg text-primary-900 dark:text-white">{selectedOrder.vehicleDescription}</h3>
               <Badge status={selectedOrder.status} />
             </div>
 
@@ -170,6 +175,25 @@ export default function MyOrdersPage() {
           </div>
         )}
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!cancelOrderId}
+        onClose={() => setCancelOrderId(null)}
+        onConfirm={() => cancelOrderId && handleCancel(cancelOrderId)}
+        title="Cancelar Pedido"
+        message="Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita."
+        confirmText="Sim, cancelar"
+        cancelText="Manter pedido"
+        variant="danger"
+        loading={cancelling}
+      />
+
+      <Toast
+        isOpen={toast.open}
+        onClose={() => setToast({ open: false, message: '' })}
+        message={toast.message}
+        variant="error"
+      />
     </div>
   );
 }

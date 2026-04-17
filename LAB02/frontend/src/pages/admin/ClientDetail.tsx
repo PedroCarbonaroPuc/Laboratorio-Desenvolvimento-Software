@@ -178,7 +178,7 @@ export default function ClientDetail() {
               ) : (
                 orders.map((order) => (
                   <tr key={order.id} className="border-b border-primary-100 hover:bg-primary-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-primary-900">{order.vehicleDescription}</td>
+                    <td className="px-6 py-4 font-racing text-primary-900">{order.vehicleDescription}</td>
                     <td className="px-6 py-4 text-primary-600 text-sm">
                       {formatDate(order.startDate)} — {formatDate(order.endDate)}
                     </td>

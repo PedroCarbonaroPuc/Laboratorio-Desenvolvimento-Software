@@ -21,7 +21,7 @@ export default function AuthLayout() {
             <div className="bg-accent p-3 rounded-2xl">
               <Car className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-white tracking-tight">RentaCar</h1>
+            <h1 className="text-4xl font-racing text-white tracking-tight">RentaCar</h1>
           </div>
           <p className="text-primary-300 text-lg max-w-md leading-relaxed">
             Plataforma completa para gestão de aluguéis de automóveis.
@@ -51,7 +51,7 @@ export default function AuthLayout() {
             <div className="bg-accent p-2 rounded-xl">
               <Car className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-primary-900 dark:text-white">RentaCar</h1>
+            <h1 className="text-2xl font-racing text-primary-900 dark:text-white">RentaCar</h1>
           </div>
           <Outlet />
         </div>

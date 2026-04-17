@@ -41,10 +41,10 @@ graph TB
             ThemeContext["ThemeContext\n(Dark/Light)"]
         end
 
-        Pages --> FEComponents
-        Pages --> FEServices
-        Pages --> FEContexts
-        FEServices --> AxiosInstance
+        Pages -->|"«usa»\nIComponenteUI"| FEComponents
+        Pages -->|"«usa»\nIApiService"| FEServices
+        Pages -->|"«usa»\nIAuthContext / IThemeContext"| FEContexts
+        FEServices -->|"«delega»\nIHttpClient"| AxiosInstance
     end
 
     subgraph Backend["⚙️ Backend (Micronaut + Java 21)"]
@@ -102,13 +102,13 @@ graph TB
             CustomExceptions["BusinessException\nResourceNotFoundException\nUnauthorizedException"]
         end
 
-        Controllers --> Services
-        Controllers --> Security
-        Services --> Repositories
-        Services --> Security
-        Repositories --> Models
-        Config --> Repositories
-        Config --> Security
+        Controllers -->|"«usa»\nIService"| Services
+        Controllers -->|"«usa»\nISecurityProvider"| Security
+        Services -->|"«usa»\nIRepository"| Repositories
+        Services -->|"«usa»\nITokenProvider / IPasswordEncoder"| Security
+        Repositories -->|"«usa»\nIDomainModel"| Models
+        Config -->|"«inicializa»\nIRepository"| Repositories
+        Config -->|"«configura»\nISecurityProvider"| Security
     end
 
     subgraph Database["🗄️ MongoDB"]
@@ -118,9 +118,9 @@ graph TB
         ContractsCol[("credit_contracts")]
     end
 
-    AxiosInstance -->|"HTTP/REST\nJSON + Bearer JWT"| Controllers
-    Repositories -->|"Micronaut Data\nMongoDB Driver"| Database
-    LoadTestSvc -->|"Reactive Streams\nMongoDB Driver"| Database
+    AxiosInstance -->|"HTTPS/REST\nJSON + Bearer JWT"| Controllers
+    Repositories -->|"MongoDB Wire Protocol\nMicronaut Data Driver"| Database
+    LoadTestSvc -->|"MongoDB Wire Protocol\nReactive Streams"| Database
 
     style Frontend fill:#e8f4fd,stroke:#2196F3
     style Backend fill:#fff3e0,stroke:#FF9800

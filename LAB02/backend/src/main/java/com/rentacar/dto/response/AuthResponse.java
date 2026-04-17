@@ -1,5 +1,6 @@
 package com.rentacar.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.micronaut.serde.annotation.Serdeable;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Serdeable
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class AuthResponse {
 
     private String token;
