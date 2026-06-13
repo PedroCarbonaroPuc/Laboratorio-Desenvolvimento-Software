@@ -1,0 +1,22 @@
+%% SD01 — Cadastro de Aluno
+%% Renderize com: mmdc -i seq-01-cadastro-aluno.mmd -o ../../images/seq-01-cadastro-aluno.png
+sequenceDiagram
+    actor Aluno
+    participant FE as Frontend
+    participant AC as AlunoController
+    participant AS as AlunoService
+    participant AR as AlunoRepository
+    participant DB as MongoDB
+
+    Aluno->>FE: Preenche formulário de cadastro
+    FE->>AC: POST /api/alunos
+    AC->>AS: criar(alunoDTO)
+    AS->>AR: existsByCpf / existsByEmail
+    AR->>DB: consulta
+    DB-->>AR: resultado
+    AS->>AR: save(aluno)
+    AR->>DB: insert
+    DB-->>AR: aluno persistido
+    AS-->>AC: AlunoResponse
+    AC-->>FE: 201 Created
+    FE-->>Aluno: Confirmação de cadastro

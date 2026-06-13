@@ -1,0 +1,17 @@
+%% SD05 — Listagem de Vantagens (Aluno)
+%% Renderize com: mmdc -i seq-05-listagem-vantagens.mmd -o ../../images/seq-05-listagem-vantagens.png
+sequenceDiagram
+    actor Aluno
+    participant FE as Frontend
+    participant VC as VantagemController
+    participant VS as VantagemService
+    participant VR as VantagemRepository
+
+    Aluno->>FE: Abre catálogo de vantagens
+    FE->>VC: GET /api/vantagens
+    VC->>VS: listarTodas()
+    VS->>VR: findAll()
+    VR-->>VS: vantagens
+    VS-->>VC: lista
+    VC-->>FE: 200 OK
+    FE-->>Aluno: Exibe vantagens com foto/custo

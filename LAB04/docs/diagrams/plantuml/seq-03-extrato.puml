@@ -1,0 +1,50 @@
+@startuml seq-03-extrato
+!include style.iuml
+title SD03 — Consulta de Extrato (Saldo, Histórico e Filtros)
+autonumber
+
+actor "Aluno/Professor" as User
+participant "Frontend" as FE
+participant "SecurityFilterChain" as SEC
+participant "TransacaoController" as TC
+participant "TransacaoService" as TS
+participant "TransacaoRepository" as TR
+database "MongoDB" as DB
+
+note over User,DB
+Extrato retorna:
+- saldo corrente
+- histórico de créditos/débitos
+- metadados (origem, destino, mensagem, timestamp)
+end note
+
+User -> FE : Abre tela "Meu Extrato"
+FE -> SEC : GET /api/transacoes/extrato/{id}?periodo&tipo
+SEC -> TC : Usuário autenticado
+TC -> TS : consultarExtrato(id, filtros)
+
+alt Perfil ALUNO
+  TS -> TR : findByDestinoIdOrOrigemId(id, filtros)
+else Perfil PROFESSOR
+  TS -> TR : findByOrigemId(id, filtros)
+end
+
+TR -> DB : query indexada por usuário + período
+DB --> TR : lista de transações
+TR --> TS : transações brutas
+
+opt Filtro por tipo (ENVIO/RESGATE)
+  TS -> TS : aplicar predicado de tipo
+end
+
+loop Para cada transação ordenada por data desc
+  TS -> TS : mapear para DTO de extrato
+end
+
+TS -> TS : calcular saldo agregado
+TS --> TC : ExtratoResponse(saldo, linhas, pagina)
+TC --> SEC : 200 OK
+SEC --> FE : payload do extrato
+FE --> User : Exibe timeline financeira
+
+@enduml

@@ -1,0 +1,29 @@
+%% SD06 — Resgate / Troca de Vantagem (Aluno)
+%% Renderize com: mmdc -i seq-06-resgate-vantagem.mmd -o ../../images/seq-06-resgate-vantagem.png
+sequenceDiagram
+    actor Aluno
+    participant FE as Frontend
+    participant RC as ResgateController
+    participant RS as ResgateService
+    participant AR as AlunoRepository
+    participant VR as VantagemRepository
+    participant RR as ResgateRepository
+    participant MQ as RabbitMQ Producer
+    participant EC as Email Consumer
+
+    Aluno->>FE: Seleciona vantagem e confirma resgate
+    FE->>RC: POST /api/resgates
+    RC->>RS: resgatar(alunoId, vantagemId)
+    RS->>AR: findById(alunoId)
+    RS->>VR: findById(vantagemId)
+    RS->>RS: valida saldo >= custo
+    RS->>RS: gera código único do cupom
+    RS->>AR: save(aluno debitado)
+    RS->>RR: save(resgate)
+    RS->>MQ: publica EmailEvent(aluno + empresa)
+    RS-->>RC: ResgateResponse(codigo)
+    RC-->>FE: 201 Created
+    MQ-->>EC: consome evento
+    EC-->>Aluno: email cupom com código
+    EC-->>Empresa: email conferência com código
+    FE-->>Aluno: Exibe cupom gerado

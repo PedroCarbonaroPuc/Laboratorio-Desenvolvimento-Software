@@ -1,0 +1,91 @@
+%% Diagrama de Classes — Sistema de Moeda Estudantil
+%% Renderize com: mmdc -i diagrama-classes.mmd -o ../../images/diagrama-classes.png
+classDiagram
+    class Instituicao {
+        +String id
+        +String nome
+        +String cidade
+    }
+
+    class Usuario {
+        <<abstract>>
+        +String id
+        +String nome
+        +String email
+        +String login
+        +String senha
+    }
+
+    class Aluno {
+        +String cpf
+        +String rg
+        +String endereco
+        +String curso
+        +int saldo
+        +receberMoedas(int)
+        +debitar(int)
+    }
+
+    class Professor {
+        +String cpf
+        +String departamento
+        +int saldo
+        +enviarMoedas(Aluno, int, String)
+        +recargaSemestral()
+    }
+
+    class EmpresaParceira {
+        +String cnpj
+        +cadastrarVantagem(Vantagem)
+    }
+
+    class Vantagem {
+        +String id
+        +String nome
+        +String descricao
+        +String foto
+        +int custoMoedas
+    }
+
+    class Transacao {
+        +String id
+        +TipoTransacao tipo
+        +String origemId
+        +String destinoId
+        +int valor
+        +String mensagem
+        +LocalDateTime data
+    }
+
+    class Resgate {
+        +String id
+        +String codigo
+        +StatusResgate status
+        +LocalDateTime data
+    }
+
+    class TipoTransacao {
+        <<enumeration>>
+        ENVIO
+        RESGATE
+    }
+
+    class StatusResgate {
+        <<enumeration>>
+        PENDENTE
+        UTILIZADO
+    }
+
+    Usuario <|-- Aluno
+    Usuario <|-- Professor
+    Usuario <|-- EmpresaParceira
+
+    Instituicao "1" o-- "*" Aluno : possui
+    Instituicao "1" o-- "*" Professor : possui
+    EmpresaParceira "1" --> "*" Vantagem : oferece
+    Professor "1" --> "*" Transacao : realiza
+    Aluno "1" --> "*" Transacao : participa
+    Aluno "1" --> "*" Resgate : efetua
+    Vantagem "1" --> "*" Resgate : gera
+    Transacao --> TipoTransacao
+    Resgate --> StatusResgate

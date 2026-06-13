@@ -1,0 +1,20 @@
+%% SD03 — Consulta de Extrato
+%% Renderize com: mmdc -i seq-03-extrato.mmd -o ../../images/seq-03-extrato.png
+sequenceDiagram
+    actor Usuario as Aluno/Professor
+    participant FE as Frontend
+    participant TC as TransacaoController
+    participant TS as TransacaoService
+    participant TR as TransacaoRepository
+    participant DB as MongoDB
+
+    Usuario->>FE: Acessa "Meu Extrato"
+    FE->>TC: GET /api/transacoes/extrato/{id}
+    TC->>TS: consultarExtrato(id)
+    TS->>TR: findByOrigemIdOrDestinoId(id)
+    TR->>DB: consulta
+    DB-->>TR: transações
+    TR-->>TS: lista
+    TS-->>TC: ExtratoResponse(saldo, transações)
+    TC-->>FE: 200 OK
+    FE-->>Usuario: Exibe saldo e histórico

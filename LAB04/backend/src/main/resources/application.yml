@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: moeda-estudantil
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/moeda_estudantil}
+      auto-index-creation: true
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SPRING_MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${SPRING_MAIL_SMTP_STARTTLS:false}
+  thymeleaf:
+    check-template-location: false
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:bW9lZGEtZXN0dWRhbnRpbC1zdXBlci1zZWNyZXQta2V5LXB1Yy1taW5hcy0yMDI1LWxhYjA0LXNlZ3VyYW5jYQ==}
+    expiration-ms: 86400000
+  mail:
+    provider: ${APP_MAIL_PROVIDER:smtp}
+    from: ${APP_MAIL_FROM:no-reply@moedaestudantil.com}
+    resend-api-key: ${APP_MAIL_RESEND_API_KEY:}
+    resend-from: ${APP_MAIL_RESEND_FROM:onboarding@resend.dev}
+    resend-url: ${APP_MAIL_RESEND_URL:https://api.resend.com/emails}
+  rabbitmq:
+    exchange: moeda.exchange
+    queue-email: moeda.email.queue
+    routing-key-email: moeda.email
+
+logging:
+  level:
+    org.springframework.amqp: WARN
+    org.mongodb.driver: WARN

@@ -1,0 +1,78 @@
+%% Modelo Entidade-Relacionamento — Sistema de Moeda Estudantil
+%% Renderize com: mmdc -i modelo-er.mmd -o ../../images/modelo-er.png
+erDiagram
+    INSTITUICAO ||--o{ ALUNO : "matricula"
+    INSTITUICAO ||--o{ PROFESSOR : "vincula"
+    EMPRESA_PARCEIRA ||--o{ VANTAGEM : "oferece"
+    PROFESSOR ||--o{ TRANSACAO : "envia"
+    ALUNO ||--o{ TRANSACAO : "recebe/troca"
+    ALUNO ||--o{ RESGATE : "efetua"
+    VANTAGEM ||--o{ RESGATE : "gera"
+
+    INSTITUICAO {
+        string id PK
+        string nome
+        string cidade
+    }
+
+    ALUNO {
+        string id PK
+        string nome
+        string email
+        string cpf
+        string rg
+        string endereco
+        string curso
+        string instituicaoId FK
+        int saldo
+        string login
+        string senha
+    }
+
+    PROFESSOR {
+        string id PK
+        string nome
+        string cpf
+        string departamento
+        string instituicaoId FK
+        int saldo
+        string login
+        string senha
+    }
+
+    EMPRESA_PARCEIRA {
+        string id PK
+        string nome
+        string email
+        string cnpj
+        string login
+        string senha
+    }
+
+    VANTAGEM {
+        string id PK
+        string nome
+        string descricao
+        string foto
+        int custoMoedas
+        string empresaId FK
+    }
+
+    TRANSACAO {
+        string id PK
+        string tipo
+        string origemId FK
+        string destinoId FK
+        int valor
+        string mensagem
+        datetime data
+    }
+
+    RESGATE {
+        string id PK
+        string codigo
+        string status
+        datetime data
+        string alunoId FK
+        string vantagemId FK
+    }

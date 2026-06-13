@@ -1,0 +1,94 @@
+@startuml diagrama-classes
+!include style.iuml
+title Diagrama de Classes — Sistema de Moeda Estudantil
+
+abstract class Usuario {
+  +String id
+  +String nome
+  +String email
+  +String login
+  +String senha
+}
+
+class Aluno {
+  +String cpf
+  +String rg
+  +String endereco
+  +String curso
+  +int saldo
+  --
+  +receberMoedas(int)
+  +debitar(int)
+}
+
+class Professor {
+  +String cpf
+  +String departamento
+  +int saldo
+  --
+  +enviarMoedas(Aluno, int, String)
+  +recargaSemestral()
+}
+
+class EmpresaParceira {
+  +String cnpj
+  --
+  +cadastrarVantagem(Vantagem)
+}
+
+class Instituicao {
+  +String id
+  +String nome
+  +String cidade
+}
+
+class Vantagem {
+  +String id
+  +String nome
+  +String descricao
+  +String foto
+  +int custoMoedas
+}
+
+class Transacao {
+  +String id
+  +TipoTransacao tipo
+  +String origemId
+  +String destinoId
+  +int valor
+  +String mensagem
+  +LocalDateTime data
+}
+
+class Resgate {
+  +String id
+  +String codigo
+  +StatusResgate status
+  +LocalDateTime data
+}
+
+enum TipoTransacao {
+  ENVIO
+  RESGATE
+}
+
+enum StatusResgate {
+  PENDENTE
+  UTILIZADO
+}
+
+Usuario <|-- Aluno
+Usuario <|-- Professor
+Usuario <|-- EmpresaParceira
+
+Instituicao "1" o-- "*" Aluno : possui >
+Instituicao "1" o-- "*" Professor : possui >
+EmpresaParceira "1" --> "*" Vantagem : oferece >
+Professor "1" --> "*" Transacao : realiza >
+Aluno "1" --> "*" Transacao : participa >
+Aluno "1" --> "*" Resgate : efetua >
+Vantagem "1" --> "*" Resgate : gera >
+Transacao --> TipoTransacao
+Resgate --> StatusResgate
+
+@enduml

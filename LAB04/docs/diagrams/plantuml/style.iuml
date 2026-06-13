@@ -1,0 +1,133 @@
+' ============================================================
+'  Estilo profissional compartilhado
+'  Sistema de Moeda Estudantil — PUC Minas / Lab. Desenv. Software
+'  Paleta: Indigo / Violet (identidade visual do projeto)
+'  Inclua com:  !include style.iuml
+' ============================================================
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam dpi 150
+skinparam defaultFontName "Helvetica Neue"
+skinparam defaultFontSize 13
+skinparam defaultFontColor #1E293B
+skinparam ArrowColor #64748B
+skinparam ArrowThickness 1.2
+skinparam TitleFontSize 20
+skinparam TitleFontColor #4338CA
+skinparam TitleFontStyle bold
+skinparam WrapWidth 220
+
+' ---------- Atores ----------
+skinparam actorStyle awesome
+skinparam actor {
+  BackgroundColor #EEF2FF
+  BorderColor #6366F1
+  FontColor #1E293B
+}
+
+' ---------- Casos de uso ----------
+skinparam usecase {
+  BackgroundColor #EEF2FF
+  BorderColor #6366F1
+  BorderThickness 1.4
+  FontColor #1E293B
+  ArrowColor #64748B
+  StereotypeFontColor #7C3AED
+}
+
+' ---------- Retângulos / Pacotes ----------
+skinparam rectangle {
+  BackgroundColor #F8FAFC
+  BorderColor #A5B4FC
+  BorderThickness 1.4
+  FontColor #4338CA
+  FontStyle bold
+}
+skinparam package {
+  BackgroundColor #F8FAFC
+  BorderColor #A5B4FC
+  BorderThickness 1.4
+  FontColor #4338CA
+}
+
+' ---------- Classes ----------
+skinparam class {
+  BackgroundColor #F8FAFF
+  BorderColor #6366F1
+  BorderThickness 1.4
+  FontColor #1E293B
+  AttributeFontColor #334155
+  StereotypeFontColor #7C3AED
+}
+skinparam classHeaderBackgroundColor #E0E7FF
+skinparam classAttributeIconSize 11
+
+' ---------- Enums ----------
+skinparam enum {
+  BackgroundColor #FAF5FF
+  BorderColor #8B5CF6
+  BorderThickness 1.4
+}
+
+' ---------- Componentes ----------
+skinparam component {
+  BackgroundColor #EEF2FF
+  BorderColor #6366F1
+  BorderThickness 1.4
+  FontColor #1E293B
+}
+
+' ---------- Infra ----------
+skinparam database {
+  BackgroundColor #ECFDF5
+  BorderColor #10B981
+  BorderThickness 1.4
+}
+skinparam queue {
+  BackgroundColor #FFF7ED
+  BorderColor #F59E0B
+  BorderThickness 1.4
+}
+skinparam node {
+  BackgroundColor #F8FAFC
+  BorderColor #6366F1
+  BorderThickness 1.4
+  FontColor #4338CA
+}
+skinparam artifact {
+  BackgroundColor #EEF2FF
+  BorderColor #6366F1
+}
+
+' ---------- Sequência ----------
+skinparam sequence {
+  ArrowColor #64748B
+  ArrowThickness 1.2
+  LifeLineBorderColor #A5B4FC
+  LifeLineBackgroundColor #EEF2FF
+  ParticipantBorderColor #6366F1
+  ParticipantBackgroundColor #EEF2FF
+  ParticipantFontColor #1E293B
+  ActorBorderColor #6366F1
+  ActorBackgroundColor #EEF2FF
+  GroupBorderColor #8B5CF6
+  GroupBackgroundColor #FAF5FF
+  GroupHeaderFontColor #6D28D9
+  DividerBackgroundColor #E0E7FF
+}
+
+' ---------- Notas ----------
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #EAB308
+  FontColor #713F12
+}
+
+' ---------- Entidades (ER) ----------
+skinparam entity {
+  BackgroundColor #F8FAFF
+  BorderColor #6366F1
+  BorderThickness 1.4
+}

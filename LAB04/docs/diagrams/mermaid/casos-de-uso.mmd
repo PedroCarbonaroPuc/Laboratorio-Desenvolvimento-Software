@@ -1,0 +1,43 @@
+%% Diagrama de Casos de Uso — Sistema de Moeda Estudantil
+%% Renderize com: mmdc -i casos-de-uso.mmd -o ../../images/casos-de-uso.png
+flowchart LR
+    Aluno([👨‍🎓 Aluno])
+    Professor([👨‍🏫 Professor])
+    Empresa([🏢 Empresa Parceira])
+    Email([📧 Sistema de Email])
+
+    subgraph Sistema de Moeda Estudantil
+        UC1((Cadastrar-se))
+        UC2((Autenticar / Login))
+        UC3((Enviar moedas ao aluno))
+        UC4((Consultar extrato))
+        UC5((Cadastrar vantagem))
+        UC6((Listar vantagens))
+        UC7((Resgatar / Trocar vantagem))
+        UC8((Receber notificação por email))
+        UC9((Gerar cupom com código))
+        UC10((Gerenciar perfil / CRUD))
+    end
+
+    Aluno --- UC1
+    Aluno --- UC2
+    Aluno --- UC4
+    Aluno --- UC6
+    Aluno --- UC7
+    Aluno --- UC10
+
+    Professor --- UC2
+    Professor --- UC3
+    Professor --- UC4
+
+    Empresa --- UC1
+    Empresa --- UC2
+    Empresa --- UC5
+    Empresa --- UC10
+
+    UC3 -.->|«include»| UC8
+    UC7 -.->|«include»| UC9
+    UC7 -.->|«include»| UC8
+    UC9 -.->|«include»| UC8
+
+    UC8 --- Email

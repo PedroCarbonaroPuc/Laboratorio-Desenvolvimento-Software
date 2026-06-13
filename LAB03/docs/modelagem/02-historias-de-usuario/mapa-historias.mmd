@@ -1,0 +1,58 @@
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ffffff","primaryBorderColor":"#455a64","lineColor":"#546e7a","fontFamily":"Arial","fontSize":"14px"},"flowchart":{"curve":"basis","nodeSpacing":48,"rankSpacing":62}}}%%
+flowchart LR
+    classDef must fill:#ffffff,stroke:#2e7d32,stroke-width:1.2px,color:#1b5e20;
+    classDef should fill:#ffffff,stroke:#0277bd,stroke-width:1.2px,color:#01579b;
+    classDef rule fill:#fff7e6,stroke:#8d6e63,stroke-width:1.2px,color:#3e2723;
+    classDef legend fill:#f7f7f7,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#212121;
+
+    subgraph E1["Epico E1 - Onboarding e Acesso"]
+      direction TB
+      HU01["HU-01<br/>Cadastro de aluno"]:::must
+      HU02["HU-02<br/>Login por perfil"]:::must
+      HU06["HU-06<br/>Cadastro de parceiro"]:::must
+    end
+
+    subgraph E2["Epico E2 - Reconhecimento Academico"]
+      direction TB
+      HU10["HU-10<br/>Credito semestral"]:::must
+      HU04["HU-04<br/>Envio de moedas"]:::must
+      HU05["HU-05<br/>Notificacao de recebimento"]:::should
+      HU03["HU-03<br/>Consulta de extrato"]:::must
+    end
+
+    subgraph E3["Epico E3 - Beneficios e Ecossistema Parceiro"]
+      direction TB
+      HU07["HU-07<br/>CRUD de vantagens"]:::must
+      HU08["HU-08<br/>Resgate de vantagem"]:::must
+      HU09["HU-09<br/>Notificacao de cupom"]:::must
+    end
+    style E1 fill:#eef4ff,stroke:#1e3a5f,stroke-width:1.4px,color:#102a43
+    style E2 fill:#eef4ff,stroke:#1e3a5f,stroke-width:1.4px,color:#102a43
+    style E3 fill:#eef4ff,stroke:#1e3a5f,stroke-width:1.4px,color:#102a43
+
+    HU02 --> HU03
+    HU02 --> HU04
+    HU02 --> HU07
+    HU06 --> HU07
+    HU10 --> HU04
+    HU04 --> HU05
+    HU03 --> HU08
+    HU07 --> HU08
+    HU08 --> HU09
+
+    RN1["RN-01: unicidade de email/CPF/CNPJ"]:::rule
+    RN2["RN-02: saldo suficiente para transferencia/resgate"]:::rule
+    RN3["RN-03: idempotencia do credito semestral"]:::rule
+
+    RN1 -. "aplica" .-> HU01
+    RN1 -. "aplica" .-> HU06
+    RN2 -. "aplica" .-> HU04
+    RN2 -. "aplica" .-> HU08
+    RN3 -. "aplica" .-> HU10
+
+    subgraph Legenda["Legenda de Planejamento"]
+      direction TB
+      L1["Borda verde: historia MUST (obrigatoria no MVP)"]:::legend
+      L2["Borda azul: historia SHOULD (evolutiva)"]:::legend
+      L3["Seta tracejada: regra de negocio associada"]:::legend
+    end

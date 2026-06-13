@@ -1,0 +1,83 @@
+@startuml seq-02-envio-moedas
+!include style.iuml
+title SD02 — Envio de Moedas (Transação, Auditoria e Notificação Assíncrona)
+autonumber
+
+actor Professor
+actor Aluno
+participant "Frontend" as FE
+participant "SecurityFilterChain" as SEC
+participant "TransacaoController" as TC
+participant "TransacaoService" as TS
+participant "ProfessorRepository" as PR
+participant "AlunoRepository" as AR
+participant "TransacaoRepository" as TR
+database "MongoDB" as DB
+queue "RabbitMQ" as MQ
+participant "EmailConsumer" as EC
+
+note over Professor,EC
+Operação monetária de mérito:
+- exige professor autenticado
+- exige mensagem justificando o mérito
+- deve preservar conservação do saldo
+end note
+
+Professor -> FE : Informa aluno, valor e mensagem
+FE -> SEC : POST /api/transacoes/envio (JWT)
+SEC -> TC : Token válido + role PROFESSOR
+TC -> TS : enviarMoedas(profId, alunoId, valor, mensagem)
+
+group Validação de negócio
+  TS -> PR : findById(profId)
+  PR -> DB : get professor
+  DB --> PR : professor
+  PR --> TS : professor
+
+  TS -> AR : findById(alunoId)
+  AR -> DB : get aluno
+  DB --> AR : aluno
+  AR --> TS : aluno
+
+  alt mensagem vazia OR valor <= 0
+    TS --> TC : DomainException("dados inválidos")
+    TC --> SEC : 400 Bad Request
+    SEC --> FE : rejeição sem efeito financeiro
+    FE --> Professor : Ajustar entrada
+  else saldo insuficiente do professor
+    TS --> TC : DomainException("saldo insuficiente")
+    TC --> SEC : 422 Unprocessable Entity
+    SEC --> FE : operação negada
+    FE --> Professor : Exibe saldo atual
+  else entrada válida
+    critical Atualização atômica do livro-razão
+      TS -> PR : save(professor debitado)
+      PR -> DB : update saldo professor
+      DB --> PR : ok
+
+      TS -> AR : save(aluno creditado)
+      AR -> DB : update saldo aluno
+      DB --> AR : ok
+
+      TS -> TR : save(transacao{tipo=ENVIO, mensagem})
+      TR -> DB : insert transação auditável
+      DB --> TR : id transação
+    end
+
+    TS -> MQ : publish(EmailEventEnvioMoedas)
+    TS --> TC : TransacaoResponse(saldos atualizados)
+    TC --> SEC : 200 OK
+    SEC --> FE : sucesso
+    FE --> Professor : Confirmação da transferência
+
+    par Notificação para professor
+      MQ -> EC : consume evento
+      EC --> Professor : e-mail de confirmação
+    else Notificação para aluno
+      MQ -> EC : consume evento
+      EC --> Aluno : e-mail de recebimento
+    end
+  end
+end
+
+@enduml

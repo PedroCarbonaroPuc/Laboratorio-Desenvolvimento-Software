@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply min-h-screen bg-zinc-50 text-slate-800 antialiased;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(34, 160, 136, 0.11), transparent 30%),
+      radial-gradient(circle at 88% 20%, rgba(251, 146, 60, 0.12), transparent 34%),
+      radial-gradient(circle at 50% 100%, rgba(14, 116, 144, 0.08), transparent 36%);
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-brand-600 via-brand-500 to-cyan-500 text-white shadow-soft hover:from-brand-700 hover:to-cyan-600 focus:ring-brand-500;
+  }
+  .btn-secondary {
+    @apply btn border border-slate-200/80 bg-white/85 text-slate-700 backdrop-blur hover:bg-white focus:ring-slate-300;
+  }
+  .btn-danger {
+    @apply btn bg-rose-50 text-rose-600 hover:bg-rose-100 focus:ring-rose-300;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 focus:ring-slate-200;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-slate-200/80 bg-white/85 px-4 py-2.5 text-sm text-slate-800 shadow-sm transition placeholder:text-slate-400 backdrop-blur focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
+  }
+
+  .card {
+    @apply rounded-2xl border border-white/50 bg-white/80 shadow-card backdrop-blur-sm;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .hero-panel {
+    @apply relative overflow-hidden rounded-3xl border border-white/35 bg-gradient-to-br from-brand-700 via-brand-600 to-cyan-600 text-white shadow-soft;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+  background-clip: content-box;
+}

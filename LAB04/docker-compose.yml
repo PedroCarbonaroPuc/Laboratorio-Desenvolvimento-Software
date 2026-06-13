@@ -1,0 +1,78 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: moeda-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: moeda-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: moeda-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"     # SMTP
+      - "8025:8025"     # Web UI
+
+  backend:
+    build: ./backend
+    container_name: moeda-backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/moeda_estudantil
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-mailhog}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-1025}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
+      SPRING_MAIL_SMTP_AUTH: ${SPRING_MAIL_SMTP_AUTH:-false}
+      SPRING_MAIL_SMTP_STARTTLS: ${SPRING_MAIL_SMTP_STARTTLS:-false}
+      APP_MAIL_PROVIDER: ${APP_MAIL_PROVIDER:-smtp}
+      APP_MAIL_RESEND_API_KEY: ${APP_MAIL_RESEND_API_KEY:-}
+      APP_MAIL_RESEND_FROM: ${APP_MAIL_RESEND_FROM:-onboarding@resend.dev}
+      APP_MAIL_RESEND_URL: ${APP_MAIL_RESEND_URL:-https://api.resend.com/emails}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-no-reply@moedaestudantil.com}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: moeda-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mongo_data:

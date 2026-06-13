@@ -1,0 +1,40 @@
+@startuml diagrama-componentes
+!include style.iuml
+title Diagrama de Componentes — Sistema de Moeda Estudantil
+
+skinparam componentStyle rectangle
+
+package "Frontend (React + Vite + Tailwind)" as FE {
+  component "Componentes de UI" as UI
+  component "Cliente HTTP (Axios)" as AX
+  UI --> AX
+}
+
+package "Backend (Spring Boot — MVC)" as BE {
+  component "Controllers\n(REST API)" as CTRL
+  component "Services\n(Regras de negócio)" as SRV
+  component "Repositories\n(Spring Data / DAO)" as REPO
+  component "Security\n(JWT + Filtros)" as SEC
+  component "Messaging\n(Producer RabbitMQ)" as MSG
+  component "Email Consumer\n(Templates Thymeleaf)" as EC
+
+  CTRL --> SRV
+  SRV --> REPO
+  SRV --> MSG
+  CTRL --> SEC
+  MSG --> EC
+}
+
+package "Infraestrutura (Docker)" as INFRA {
+  database "MongoDB" as DB
+  queue "RabbitMQ" as MQ
+  component "MailHog (SMTP)" as MAIL
+}
+
+AX --> CTRL : HTTP / JSON
+REPO --> DB : Driver Mongo
+MSG --> MQ : AMQP publish
+MQ --> EC : AMQP consume
+EC --> MAIL : SMTP
+
+@enduml

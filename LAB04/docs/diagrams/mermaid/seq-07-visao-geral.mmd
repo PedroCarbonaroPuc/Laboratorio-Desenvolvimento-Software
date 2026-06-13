@@ -1,0 +1,31 @@
+%% SD-GERAL — Visão geral do fluxo (Lab04S03)
+%% Renderize com: mmdc -i seq-07-visao-geral.mmd -o ../../images/seq-07-visao-geral.png
+sequenceDiagram
+    actor Professor
+    actor Aluno
+    actor Empresa
+    participant API as Backend (MVC)
+    participant DB as MongoDB
+    participant MQ as RabbitMQ
+    participant Mail as Email
+
+    Note over Empresa,API: Cadastro e oferta de vantagens
+    Empresa->>API: Cadastra-se / cadastra vantagens
+    API->>DB: persiste empresa e vantagens
+
+    Note over Aluno,API: Ingresso do aluno
+    Aluno->>API: Cadastra-se (instituição pré-cadastrada)
+    API->>DB: persiste aluno (saldo 0)
+
+    Note over Professor,Aluno: Reconhecimento de mérito
+    Professor->>API: Envia moedas + mensagem
+    API->>DB: debita professor / credita aluno
+    API->>MQ: evento de notificação
+    MQ->>Mail: email ao aluno
+
+    Note over Aluno,Empresa: Troca por vantagem
+    Aluno->>API: Consulta extrato e vantagens
+    Aluno->>API: Resgata vantagem
+    API->>DB: debita aluno / cria resgate
+    API->>MQ: evento de cupom
+    MQ->>Mail: email cupom (aluno + empresa)

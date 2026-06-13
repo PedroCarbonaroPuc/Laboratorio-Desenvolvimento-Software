@@ -1,0 +1,33 @@
+@startuml arquitetura
+!include style.iuml
+title Arquitetura de Implantação (Docker Compose) — Sistema de Moeda Estudantil
+
+node "Navegador do Usuário" as browser {
+  artifact "SPA React (build)" as spa
+}
+
+node "Docker Host" as host {
+
+  node "container: frontend\n(Nginx)" as cfront {
+    artifact "dist/ estático" as dist
+  }
+
+  node "container: backend\n(Spring Boot · Java 21)" as cback {
+    artifact "moeda-estudantil.jar" as jar
+  }
+
+  database "container: mongo\n(MongoDB 7)" as cmongo
+  queue "container: rabbitmq\n(RabbitMQ 3.13)" as crabbit
+  node "container: mailhog\n(SMTP + Web UI)" as cmail
+}
+
+browser --> cfront : HTTP  :3000
+cfront --> cback : proxy /api  :8080
+cback --> cmongo : Mongo  :27017
+cback --> crabbit : AMQP publish  :5672
+crabbit --> cback : AMQP consume
+cback --> cmail : SMTP  :1025
+browser ..> crabbit : Mgmt UI  :15672
+browser ..> cmail : Inbox  :8025
+
+@enduml

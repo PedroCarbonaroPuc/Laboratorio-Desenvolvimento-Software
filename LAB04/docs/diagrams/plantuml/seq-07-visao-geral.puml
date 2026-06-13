@@ -1,0 +1,119 @@
+@startuml seq-07-visao-geral
+!include style.iuml
+title SD-GERAL — Orquestração E2E da Plataforma (Nível Arquitetural Avançado)
+autonumber
+
+actor Professor
+actor Aluno
+actor Empresa
+participant "Frontend Web" as FE
+participant "API Spring Boot" as API
+database "MongoDB" as DB
+queue "RabbitMQ" as MQ
+participant "Email Worker" as MAIL
+
+note over Professor,MAIL
+Visão integrada do domínio "Moeda Estudantil":
+atores colaboram em ciclos de mérito -> saldo -> resgate -> benefício real.
+O diagrama enfatiza causalidade, consistência transacional e assíncronia.
+end note
+
+== Ciclo 1: Onboarding e Catálogo ==
+
+ref over Empresa,API
+SD04 - Cadastro de Vantagem
+end ref
+
+Empresa -> FE : Cadastra-se e publica vantagens
+FE -> API : POST /api/empresas ; POST /api/vantagens
+API -> DB : persistência de empresa e ofertas
+DB --> API : confirmação de escrita
+API --> FE : 201 Created
+
+ref over Aluno,API
+SD01 - Cadastro de Aluno
+end ref
+
+Aluno -> FE : Cadastra-se com instituição válida
+FE -> API : POST /api/alunos
+API -> DB : persistência do aluno (saldo inicial)
+DB --> API : aluno criado
+API --> FE : 201 Created
+
+== Ciclo 2: Mérito Acadêmico (Professor -> Aluno) ==
+
+ref over Professor,API
+SD02 - Envio de Moedas
+end ref
+
+Professor -> FE : Reconhece mérito com mensagem obrigatória
+FE -> API : POST /api/transacoes/envio
+
+alt Regra violada (valor<=0 OR saldo insuficiente)
+  API --> FE : rejeição de domínio (4xx)
+  FE --> Professor : feedback corretivo
+else Regra atendida
+  critical Transação financeira consistente
+    API -> DB : debita professor
+    API -> DB : credita aluno
+    API -> DB : grava trilha auditável da transação
+  end
+
+  API -> MQ : publica evento de notificação de mérito
+  API --> FE : confirmação da operação
+
+  par AND trilha de comunicação
+    MQ -> MAIL : evento para professor
+    MAIL --> Professor : e-mail de confirmação
+  else
+    MQ -> MAIL : evento para aluno
+    MAIL --> Aluno : e-mail de recebimento
+  end
+end
+
+== Ciclo 3: Consumo do Benefício (Aluno -> Empresa) ==
+
+ref over Aluno,API
+SD06 - Resgate de Vantagem
+end ref
+
+Aluno -> FE : Navega no catálogo e solicita resgate
+FE -> API : GET /api/vantagens ; POST /api/resgates
+
+alt Saldo insuficiente
+  API --> FE : operação negada (422)
+  FE --> Aluno : orientar acúmulo de moedas
+else Resgate aprovado
+  critical Liquidação do resgate
+    API -> DB : debita saldo do aluno
+    API -> DB : cria resgate + cupom único
+  end
+
+  API -> MQ : publica evento de cupom
+
+  par AND notificação bilateral
+    MQ -> MAIL : evento para aluno
+    MAIL --> Aluno : e-mail com cupom
+  else
+    MQ -> MAIL : evento para empresa
+    MAIL --> Empresa : e-mail de validação do cupom
+  end
+
+  FE --> Aluno : cupom exibido em "Minhas Vantagens"
+end
+
+== Observabilidade e Governança ==
+
+opt Auditoria de operação
+  API -> DB : persiste metadados (origem, destino, timestamp, mensagem)
+end
+
+opt Consulta de extrato para transparência
+  Aluno -> FE : solicita extrato
+  FE -> API : GET /api/transacoes/extrato/{id}
+  API -> DB : consulta movimentações
+  DB --> API : lista ordenada
+  API --> FE : saldo + histórico
+end
+
+@enduml

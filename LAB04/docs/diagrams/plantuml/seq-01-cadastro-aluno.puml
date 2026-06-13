@@ -1,0 +1,71 @@
+@startuml seq-01-cadastro-aluno
+!include style.iuml
+title SD01 — Cadastro de Aluno (Validações e Integridade de Domínio)
+autonumber
+
+actor Aluno
+participant "Frontend" as FE
+participant "SecurityFilterChain" as SEC
+participant "AlunoController" as AC
+participant "AlunoService" as AS
+participant "InstituicaoRepository" as IR
+participant "AlunoRepository" as AR
+database "MongoDB" as DB
+
+note over Aluno,DB
+Contexto acadêmico:
+- cadastro aberto ao público (sem JWT)
+- unicidade por CPF e e-mail
+- instituição deve existir no catálogo oficial
+- saldo inicial do aluno = 0
+end note
+
+Aluno -> FE : Preenche formulário (nome, cpf, e-mail, instituição)
+FE -> SEC : POST /api/alunos
+SEC -> AC : Rota pública permitida
+AC -> AS : criar(alunoDTO)
+
+group Pré-validação de regras
+  AS -> IR : existsById(instituicaoId)
+  IR -> DB : consulta instituição
+  DB --> IR : existe?
+  IR --> AS : true/false
+
+  alt Instituição inválida
+    AS --> AC : DomainException("instituição inválida")
+    AC --> SEC : 400 Bad Request
+    SEC --> FE : erro de validação
+    FE --> Aluno : Corrigir instituição
+  else Instituição válida
+    AS -> AR : existsByCpf(cpf)
+    AR -> DB : consulta por CPF
+    DB --> AR : true/false
+    AR --> AS : duplicidade CPF
+
+    AS -> AR : existsByEmail(email)
+    AR -> DB : consulta por e-mail
+    DB --> AR : true/false
+    AR --> AS : duplicidade e-mail
+  end
+end
+
+alt CPF ou e-mail já existente
+  AS --> AC : DomainException("aluno já cadastrado")
+  AC --> SEC : 409 Conflict
+  SEC --> FE : payload de erro
+  FE --> Aluno : Exibe conflito de cadastro
+else Dados válidos
+  critical Persistência consistente do agregado Aluno
+    AS -> AR : save(aluno{saldo=0,role=ALUNO})
+    AR -> DB : insert aluno
+    DB --> AR : documento persistido + id
+    AR --> AS : entidade persistida
+  end
+
+  AS --> AC : AlunoResponse(id, nome, e-mail, saldo)
+  AC --> SEC : 201 Created
+  SEC --> FE : resposta de sucesso
+  FE --> Aluno : Cadastro concluído
+end
+
+@enduml

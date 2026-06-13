@@ -1,0 +1,74 @@
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ffffff","primaryBorderColor":"#455a64","lineColor":"#546e7a","fontFamily":"Arial","fontSize":"14px"},"flowchart":{"curve":"basis","nodeSpacing":48,"rankSpacing":62}}}%%
+flowchart LR
+    classDef actor fill:#eef6ff,stroke:#1e3a5f,stroke-width:1.5px,color:#102a43,font-weight:bold;
+    classDef frontend fill:#ffffff,stroke:#2e7d32,stroke-width:1.2px,color:#1b5e20;
+    classDef backend fill:#ffffff,stroke:#0277bd,stroke-width:1.2px,color:#01579b;
+    classDef data fill:#ffffff,stroke:#6a1b9a,stroke-width:1.2px,color:#4a148c;
+    classDef external fill:#fff7e6,stroke:#8d6e63,stroke-width:1.2px,color:#3e2723;
+    classDef legend fill:#f7f7f7,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#212121;
+
+    Aluno([Aluno]):::actor
+    Professor([Professor]):::actor
+    Parceiro([Empresa Parceira]):::actor
+
+    subgraph Deploy["Visao de Implantacao (Docker Compose)"]
+      direction LR
+
+      subgraph FE["Container Frontend (Nginx + React SPA)"]
+        direction TB
+        AppShell["App Orchestrator"]:::frontend
+        PublicUI["PublicArea"]:::frontend
+        StudentUI["StudentArea"]:::frontend
+        ProfessorUI["ProfessorArea"]:::frontend
+        PartnerUI["PartnerArea"]:::frontend
+        SharedUI["Shared Components"]:::frontend
+        ApiClient["API Client"]:::frontend
+
+        AppShell --> PublicUI
+        AppShell --> StudentUI
+        AppShell --> ProfessorUI
+        AppShell --> PartnerUI
+        AppShell --> SharedUI
+        AppShell --> ApiClient
+      end
+
+      subgraph BE["Container Backend (Spring Boot)"]
+        direction TB
+        Controllers["REST Controllers"]:::backend
+        Security["AuthFacade + TokenFilter"]:::backend
+        Services["Domain Services"]:::backend
+        Exceptions["GlobalExceptionHandler"]:::backend
+        Seeder["DataSeeder"]:::backend
+        Repositories["Spring Data Repositories"]:::backend
+
+        Controllers --> Security
+        Controllers --> Services
+        Controllers --> Exceptions
+        Services --> Repositories
+        Seeder --> Services
+        Seeder --> Repositories
+      end
+
+      subgraph DB["Container MongoDB"]
+        direction TB
+        Mongo[(moeda_estudantil)]:::data
+      end
+    end
+
+    SMTP[(SMTP ou Email Mock)]:::external
+
+    Aluno -->|HTTP| AppShell
+    Professor -->|HTTP| AppShell
+    Parceiro -->|HTTP| AppShell
+
+    ApiClient -->|REST/JSON| Controllers
+    Repositories -->|Mongo Driver| Mongo
+    Services -->|SMTP| SMTP
+
+    subgraph Legenda["Legenda de Integracao"]
+      direction TB
+      L1["Blocos verdes: componentes da SPA"]:::legend
+      L2["Blocos azuis: componentes de backend"]:::legend
+      L3["Bloco roxo: persistencia"]:::legend
+      L4["Bloco bege: dependencia externa"]:::legend
+    end

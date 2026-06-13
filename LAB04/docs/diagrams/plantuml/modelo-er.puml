@@ -1,0 +1,90 @@
+@startuml modelo-er
+!include style.iuml
+hide circle
+skinparam linetype ortho
+title Modelo Entidade-Relacionamento — Sistema de Moeda Estudantil
+
+entity "INSTITUICAO" as instituicao {
+  * id : string <<PK>>
+  --
+  nome : string
+  cidade : string
+}
+
+entity "ALUNO" as aluno {
+  * id : string <<PK>>
+  --
+  nome : string
+  email : string <<unique>>
+  cpf : string <<unique>>
+  rg : string
+  endereco : string
+  curso : string
+  instituicaoId : string <<FK>>
+  saldo : int
+  login : string <<unique>>
+  senha : string
+}
+
+entity "PROFESSOR" as professor {
+  * id : string <<PK>>
+  --
+  nome : string
+  cpf : string <<unique>>
+  departamento : string
+  instituicaoId : string <<FK>>
+  saldo : int
+  login : string <<unique>>
+  senha : string
+}
+
+entity "EMPRESA_PARCEIRA" as empresa {
+  * id : string <<PK>>
+  --
+  nome : string
+  email : string <<unique>>
+  cnpj : string <<unique>>
+  login : string <<unique>>
+  senha : string
+}
+
+entity "VANTAGEM" as vantagem {
+  * id : string <<PK>>
+  --
+  nome : string
+  descricao : string
+  foto : string
+  custoMoedas : int
+  empresaId : string <<FK>>
+}
+
+entity "TRANSACAO" as transacao {
+  * id : string <<PK>>
+  --
+  tipo : string
+  origemId : string <<FK>>
+  destinoId : string <<FK>>
+  valor : int
+  mensagem : string
+  data : datetime
+}
+
+entity "RESGATE" as resgate {
+  * id : string <<PK>>
+  --
+  codigo : string <<unique>>
+  status : string
+  data : datetime
+  alunoId : string <<FK>>
+  vantagemId : string <<FK>>
+}
+
+instituicao ||--o{ aluno : matricula
+instituicao ||--o{ professor : vincula
+empresa ||--o{ vantagem : oferece
+professor ||--o{ transacao : envia
+aluno ||--o{ transacao : "recebe / troca"
+aluno ||--o{ resgate : efetua
+vantagem ||--o{ resgate : gera
+
+@enduml

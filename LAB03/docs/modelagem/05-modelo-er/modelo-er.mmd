@@ -1,0 +1,218 @@
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ffffff","primaryBorderColor":"#334e68","lineColor":"#486581","fontFamily":"Arial","fontSize":"13px"},"flowchart":{"curve":"basis","nodeSpacing":44,"rankSpacing":56}}}%%
+flowchart LR
+    classDef entity fill:#ffffff,stroke:#1f4e79,stroke-width:1.8px,color:#102a43,font-weight:bold;
+    classDef relation fill:#fff7e6,stroke:#8d6e63,stroke-width:1.6px,color:#3e2723,font-weight:bold;
+    classDef attr fill:#f8fbff,stroke:#627d98,stroke-width:1.1px,color:#243b53;
+    classDef keyAttr fill:#e8f1ff,stroke:#1f4e79,stroke-width:1.4px,color:#102a43,font-weight:bold;
+    classDef constraint fill:#f7f7f7,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#212121;
+
+    INSTITUTION[INSTITUTION]:::entity
+    STUDENT[STUDENT]:::entity
+    PROFESSOR[PROFESSOR]:::entity
+    PARTNER_COMPANY[PARTNER_COMPANY]:::entity
+    BENEFIT[BENEFIT]:::entity
+    COIN_TRANSACTION[COIN_TRANSACTION]:::entity
+    SESSION_TOKEN[SESSION_TOKEN]:::entity
+    PROFESSOR_SEMESTER_ALLOWANCE[PROFESSOR_SEMESTER_ALLOWANCE]:::entity
+
+    REL_STUDENT_INST{ENROLLED_AT}:::relation
+    REL_PROF_INST{BELONGS_TO}:::relation
+    REL_PARTNER_BENEFIT{OFFERS}:::relation
+
+    REL_PROF_ALLOWANCE{RECEIVES_SEMESTER_ALLOWANCE}:::relation
+
+    REL_PROF_TX{EMITS_TRANSACTION}:::relation
+    REL_STUDENT_TX{PARTICIPATES_STUDENT}:::relation
+    REL_PARTNER_TX{PARTICIPATES_PARTNER}:::relation
+    REL_BENEFIT_TX{REFERENCES_BENEFIT}:::relation
+
+    REL_STUDENT_TOKEN{HAS_SESSION}:::relation
+    REL_PROF_TOKEN{HAS_SESSION}:::relation
+    REL_PARTNER_TOKEN{HAS_SESSION}:::relation
+
+    INSTITUTION -- "1" --- REL_STUDENT_INST
+    REL_STUDENT_INST -- "N" --- STUDENT
+
+    INSTITUTION -- "1" --- REL_PROF_INST
+    REL_PROF_INST -- "N" --- PROFESSOR
+
+    PARTNER_COMPANY -- "1" --- REL_PARTNER_BENEFIT
+    REL_PARTNER_BENEFIT -- "N" --- BENEFIT
+
+    PROFESSOR -- "1" --- REL_PROF_ALLOWANCE
+    REL_PROF_ALLOWANCE -- "N" --- PROFESSOR_SEMESTER_ALLOWANCE
+
+    PROFESSOR -- "1" --- REL_PROF_TX
+    REL_PROF_TX -- "N" --- COIN_TRANSACTION
+
+    STUDENT -- "1" --- REL_STUDENT_TX
+    REL_STUDENT_TX -- "N" --- COIN_TRANSACTION
+
+    PARTNER_COMPANY -- "1" --- REL_PARTNER_TX
+    REL_PARTNER_TX -- "N" --- COIN_TRANSACTION
+
+    BENEFIT -- "1" --- REL_BENEFIT_TX
+    REL_BENEFIT_TX -- "N" --- COIN_TRANSACTION
+
+    STUDENT -- "1" --- REL_STUDENT_TOKEN
+    REL_STUDENT_TOKEN -- "N" --- SESSION_TOKEN
+
+    PROFESSOR -- "1" --- REL_PROF_TOKEN
+    REL_PROF_TOKEN -- "N" --- SESSION_TOKEN
+
+    PARTNER_COMPANY -- "1" --- REL_PARTNER_TOKEN
+    REL_PARTNER_TOKEN -- "N" --- SESSION_TOKEN
+
+    I_ID((id PK)):::keyAttr
+    I_NAME((name UK)):::keyAttr
+    I_CAMPUS((campus)):::attr
+    I_CITY((city)):::attr
+    I_CREATED((createdAt)):::attr
+    INSTITUTION --- I_ID
+    INSTITUTION --- I_NAME
+    INSTITUTION --- I_CAMPUS
+    INSTITUTION --- I_CITY
+    INSTITUTION --- I_CREATED
+
+    S_ID((id PK)):::keyAttr
+    S_NAME((name)):::attr
+    S_EMAIL((email UK)):::keyAttr
+    S_CPF((cpf UK)):::keyAttr
+    S_RG((rg)):::attr
+    S_ADDRESS((address)):::attr
+    S_COURSE((course)):::attr
+    S_PASSWORD((passwordHash)):::attr
+    S_BALANCE((balance)):::attr
+    S_CREATED((createdAt)):::attr
+    S_UPDATED((updatedAt)):::attr
+    STUDENT --- S_ID
+    STUDENT --- S_NAME
+    STUDENT --- S_EMAIL
+    STUDENT --- S_CPF
+    STUDENT --- S_RG
+    STUDENT --- S_ADDRESS
+    STUDENT --- S_COURSE
+    STUDENT --- S_PASSWORD
+    STUDENT --- S_BALANCE
+    STUDENT --- S_CREATED
+    STUDENT --- S_UPDATED
+
+    P_ID((id PK)):::keyAttr
+    P_NAME((name)):::attr
+    P_EMAIL((email UK)):::keyAttr
+    P_CPF((cpf UK)):::keyAttr
+    P_DEPARTMENT((department)):::attr
+    P_PASSWORD((passwordHash)):::attr
+    P_BALANCE((balance)):::attr
+    P_CREATED((createdAt)):::attr
+    P_UPDATED((updatedAt)):::attr
+    PROFESSOR --- P_ID
+    PROFESSOR --- P_NAME
+    PROFESSOR --- P_EMAIL
+    PROFESSOR --- P_CPF
+    PROFESSOR --- P_DEPARTMENT
+    PROFESSOR --- P_PASSWORD
+    PROFESSOR --- P_BALANCE
+    PROFESSOR --- P_CREATED
+    PROFESSOR --- P_UPDATED
+
+    PC_ID((id PK)):::keyAttr
+    PC_COMPANY((companyName)):::attr
+    PC_CONTACT((contactName)):::attr
+    PC_EMAIL((email UK)):::keyAttr
+    PC_CNPJ((cnpj UK)):::keyAttr
+    PC_ADDRESS((address)):::attr
+    PC_PASSWORD((passwordHash)):::attr
+    PC_CREATED((createdAt)):::attr
+    PC_UPDATED((updatedAt)):::attr
+    PARTNER_COMPANY --- PC_ID
+    PARTNER_COMPANY --- PC_COMPANY
+    PARTNER_COMPANY --- PC_CONTACT
+    PARTNER_COMPANY --- PC_EMAIL
+    PARTNER_COMPANY --- PC_CNPJ
+    PARTNER_COMPANY --- PC_ADDRESS
+    PARTNER_COMPANY --- PC_PASSWORD
+    PARTNER_COMPANY --- PC_CREATED
+    PARTNER_COMPANY --- PC_UPDATED
+
+    B_ID((id PK)):::keyAttr
+    B_TITLE((title)):::attr
+    B_DESC((description)):::attr
+    B_IMAGE((imageUrl)):::attr
+    B_COST((costCoins)):::attr
+    B_ACTIVE((active)):::attr
+    B_CREATED((createdAt)):::attr
+    B_UPDATED((updatedAt)):::attr
+    BENEFIT --- B_ID
+    BENEFIT --- B_TITLE
+    BENEFIT --- B_DESC
+    BENEFIT --- B_IMAGE
+    BENEFIT --- B_COST
+    BENEFIT --- B_ACTIVE
+    BENEFIT --- B_CREATED
+    BENEFIT --- B_UPDATED
+
+    TX_ID((id PK)):::keyAttr
+    TX_TYPE((type)):::attr
+    TX_AMOUNT((amount)):::attr
+    TX_DESCRIPTION((description)):::attr
+    TX_FROM_TYPE((fromActorType)):::attr
+    TX_FROM_ID((fromActorId)):::attr
+    TX_TO_TYPE((toActorType)):::attr
+    TX_TO_ID((toActorId)):::attr
+    TX_COUPON((couponCode)):::attr
+    TX_SEMESTER((semesterKey)):::attr
+    TX_CREATED((createdAt)):::attr
+    COIN_TRANSACTION --- TX_ID
+    COIN_TRANSACTION --- TX_TYPE
+    COIN_TRANSACTION --- TX_AMOUNT
+    COIN_TRANSACTION --- TX_DESCRIPTION
+    COIN_TRANSACTION --- TX_FROM_TYPE
+    COIN_TRANSACTION --- TX_FROM_ID
+    COIN_TRANSACTION --- TX_TO_TYPE
+    COIN_TRANSACTION --- TX_TO_ID
+    COIN_TRANSACTION --- TX_COUPON
+    COIN_TRANSACTION --- TX_SEMESTER
+    COIN_TRANSACTION --- TX_CREATED
+
+    ST_ID((id PK)):::keyAttr
+    ST_TOKEN((token UK)):::keyAttr
+    ST_ROLE((role)):::attr
+    ST_USER_ID((userId)):::attr
+    ST_CREATED((createdAt)):::attr
+    ST_EXPIRES((expiresAt)):::attr
+    SESSION_TOKEN --- ST_ID
+    SESSION_TOKEN --- ST_TOKEN
+    SESSION_TOKEN --- ST_ROLE
+    SESSION_TOKEN --- ST_USER_ID
+    SESSION_TOKEN --- ST_CREATED
+    SESSION_TOKEN --- ST_EXPIRES
+
+    PSA_ID((id PK)):::keyAttr
+    PSA_SEMESTER((semesterKey)):::attr
+    PSA_UNIQUE((professorSemesterKey UK)):::keyAttr
+    PSA_AMOUNT((allocatedAmount)):::attr
+    PSA_CREATED((createdAt)):::attr
+    PROFESSOR_SEMESTER_ALLOWANCE --- PSA_ID
+    PROFESSOR_SEMESTER_ALLOWANCE --- PSA_SEMESTER
+    PROFESSOR_SEMESTER_ALLOWANCE --- PSA_UNIQUE
+    PROFESSOR_SEMESTER_ALLOWANCE --- PSA_AMOUNT
+    PROFESSOR_SEMESTER_ALLOWANCE --- PSA_CREATED
+
+    CARD_TX[[Rule: cardinality in COIN_TRANSACTION depends on type]]:::constraint
+    RULE_TX1[[SEMESTER_ALLOCATION => professor mandatory + semesterKey mandatory]]:::constraint
+    RULE_TX2[[PROFESSOR_TO_STUDENT => professor mandatory + student mandatory]]:::constraint
+    RULE_TX3[[REDEMPTION => student mandatory + partner mandatory + benefit mandatory + couponCode mandatory]]:::constraint
+
+    COIN_TRANSACTION -.-> CARD_TX
+    CARD_TX -.-> RULE_TX1
+    CARD_TX -.-> RULE_TX2
+    CARD_TX -.-> RULE_TX3
+
+    CARD_TOKEN[[Rule: each SESSION_TOKEN belongs to exactly one actor type according to role]]:::constraint
+    SESSION_TOKEN -.-> CARD_TOKEN
+
+    LEG_ENTITY[[Rectangle: entity]]:::constraint
+    LEG_REL[[Diamond: relationship]]:::constraint
+    LEG_ATTR[[Oval: attribute]]:::constraint
+    LEG_KEY[[Blue oval: key attribute PK/UK]]:::constraint

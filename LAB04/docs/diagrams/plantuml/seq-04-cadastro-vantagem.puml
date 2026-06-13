@@ -1,0 +1,63 @@
+@startuml seq-04-cadastro-vantagem
+!include style.iuml
+title SD04 — Cadastro de Vantagem (Governança de Catálogo)
+autonumber
+
+actor Empresa
+participant "Frontend" as FE
+participant "SecurityFilterChain" as SEC
+participant "VantagemController" as VC
+participant "VantagemService" as VS
+participant "EmpresaRepository" as ER
+participant "VantagemRepository" as VR
+database "MongoDB" as DB
+
+note over Empresa,DB
+Regras principais:
+- apenas empresa autenticada cadastra vantagem
+- custo em moedas deve ser > 0
+- título e descrição são obrigatórios
+- vínculo com empresa dona da oferta
+end note
+
+Empresa -> FE : Preenche nome, descrição, foto e custo
+FE -> SEC : POST /api/vantagens (JWT)
+SEC -> VC : Token válido + role EMPRESA
+VC -> VS : criar(vantagemDTO, empresaLogada)
+
+VS -> ER : findById(empresaId)
+ER -> DB : consulta empresa
+DB --> ER : empresa
+ER --> VS : empresa encontrada
+
+alt Empresa não encontrada
+  VS --> VC : DomainException("empresa inválida")
+  VC --> SEC : 404 Not Found
+  SEC --> FE : erro
+  FE --> Empresa : Reautenticar e tentar novamente
+else Empresa válida
+  alt custo <= 0 OR nome vazio
+    VS --> VC : DomainException("dados da vantagem inválidos")
+    VC --> SEC : 400 Bad Request
+    SEC --> FE : payload de validação
+    FE --> Empresa : Corrigir formulário
+  else entrada válida
+    opt URL de imagem informada
+      VS -> VS : validar formato e extensão da imagem
+    end
+
+    critical Persistência da vantagem vinculada à empresa
+      VS -> VR : save(vantagem)
+      VR -> DB : insert vantagem
+      DB --> VR : documento persistido
+      VR --> VS : vantagem criada
+    end
+
+    VS --> VC : VantagemResponse(id, nome, custo)
+    VC --> SEC : 201 Created
+    SEC --> FE : sucesso
+    FE --> Empresa : Vantagem publicada no catálogo
+  end
+end
+
+@enduml

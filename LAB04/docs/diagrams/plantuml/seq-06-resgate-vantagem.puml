@@ -1,0 +1,73 @@
+@startuml seq-06-resgate-vantagem
+!include style.iuml
+title SD06 — Resgate de Vantagem (Cupom, Débito e Confirmações)
+autonumber
+
+actor Aluno
+actor Empresa
+participant "Frontend" as FE
+participant "SecurityFilterChain" as SEC
+participant "ResgateController" as RC
+participant "ResgateService" as RS
+participant "AlunoRepository" as AR
+participant "VantagemRepository" as VR
+participant "ResgateRepository" as RR
+database "MongoDB" as DB
+queue "RabbitMQ" as MQ
+participant "EmailConsumer" as EC
+
+note over Aluno,EC
+Caso crítico de negócio:
+- aluno troca saldo por vantagem
+- sistema gera cupom único rastreável
+- notificação assíncrona para aluno e empresa
+end note
+
+Aluno -> FE : Seleciona vantagem e confirma resgate
+FE -> SEC : POST /api/resgates (JWT)
+SEC -> RC : Token válido + role ALUNO
+RC -> RS : resgatar(alunoId, vantagemId)
+
+RS -> AR : findById(alunoId)
+AR -> DB : get aluno
+DB --> AR : aluno
+AR --> RS : aluno
+
+RS -> VR : findById(vantagemId)
+VR -> DB : get vantagem
+DB --> VR : vantagem
+VR --> RS : vantagem
+
+alt saldo aluno < custo vantagem
+  RS --> RC : DomainException("saldo insuficiente")
+  RC --> SEC : 422 Unprocessable Entity
+  SEC --> FE : erro de domínio
+  FE --> Aluno : Exibe saldo necessário
+else saldo suficiente
+  critical Consistência financeira e geração de cupom
+    RS -> RS : gerarCodigoCupomUnico()
+    RS -> AR : save(aluno debitado)
+    AR -> DB : update saldo aluno
+    DB --> AR : ok
+
+    RS -> RR : save(resgate{codigo,status=GERADO})
+    RR -> DB : insert resgate
+    DB --> RR : resgate persistido
+  end
+
+  RS -> MQ : publish(EmailEventResgate)
+  RS --> RC : ResgateResponse(codigoCupom)
+  RC --> SEC : 201 Created
+  SEC --> FE : sucesso
+  FE --> Aluno : Exibe cupom na tela
+
+  par Notificação para aluno
+    MQ -> EC : consume evento
+    EC --> Aluno : e-mail com código e instruções
+  else Notificação para empresa
+    MQ -> EC : consume evento
+    EC --> Empresa : e-mail para validação do cupom
+  end
+end
+
+@enduml

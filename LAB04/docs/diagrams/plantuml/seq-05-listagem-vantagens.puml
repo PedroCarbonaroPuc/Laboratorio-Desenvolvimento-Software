@@ -1,0 +1,48 @@
+@startuml seq-05-listagem-vantagens
+!include style.iuml
+title SD05 — Listagem de Vantagens (Consulta, Filtros e Ordenação)
+autonumber
+
+actor Aluno
+participant "Frontend" as FE
+participant "SecurityFilterChain" as SEC
+participant "VantagemController" as VC
+participant "VantagemService" as VS
+participant "VantagemRepository" as VR
+database "MongoDB" as DB
+
+note over Aluno,DB
+Objetivo do caso:
+fornecer catálogo navegável para decisão de resgate
+com critérios de custo e relevância.
+end note
+
+Aluno -> FE : Acessa catálogo
+FE -> SEC : GET /api/vantagens?busca&custoMin&custoMax&page
+SEC -> VC : Usuário autenticado
+VC -> VS : listarVantagens(filtros)
+
+alt Sem filtros
+  VS -> VR : findAll(order by createdAt desc)
+else Com filtros avançados
+  VS -> VR : buscaPorCriterios(texto, faixaCusto, paginação)
+end
+
+VR -> DB : query de catálogo
+DB --> VR : vantagens encontradas
+VR --> VS : lista de entidades
+
+opt Ordenação por custo asc/desc
+  VS -> VS : ordenar DTOs conforme parâmetro
+end
+
+loop Para cada vantagem retornada
+  VS -> VS : mapear campos públicos (nome, custo, imagem, empresa)
+end
+
+VS --> VC : VantagensResponse(itens, total, pagina)
+VC --> SEC : 200 OK
+SEC --> FE : payload do catálogo
+FE --> Aluno : Renderiza cards e filtros
+
+@enduml

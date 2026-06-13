@@ -1,0 +1,19 @@
+%% SD04 — Cadastro de Vantagem (Empresa)
+%% Renderize com: mmdc -i seq-04-cadastro-vantagem.mmd -o ../../images/seq-04-cadastro-vantagem.png
+sequenceDiagram
+    actor Empresa
+    participant FE as Frontend
+    participant VC as VantagemController
+    participant VS as VantagemService
+    participant VR as VantagemRepository
+    participant DB as MongoDB
+
+    Empresa->>FE: Preenche vantagem (nome, descrição, foto, custo)
+    FE->>VC: POST /api/vantagens
+    VC->>VS: criar(vantagemDTO, empresaId)
+    VS->>VR: save(vantagem)
+    VR->>DB: insert
+    DB-->>VR: vantagem persistida
+    VS-->>VC: VantagemResponse
+    VC-->>FE: 201 Created
+    FE-->>Empresa: Confirmação

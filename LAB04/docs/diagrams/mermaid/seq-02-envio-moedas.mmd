@@ -1,0 +1,29 @@
+%% SD02 — Envio de Moedas (Professor -> Aluno)
+%% Renderize com: mmdc -i seq-02-envio-moedas.mmd -o ../../images/seq-02-envio-moedas.png
+sequenceDiagram
+    actor Professor
+    participant FE as Frontend
+    participant TC as TransacaoController
+    participant TS as TransacaoService
+    participant PR as ProfessorRepository
+    participant AR as AlunoRepository
+    participant MQ as RabbitMQ Producer
+    participant EC as Email Consumer
+
+    Professor->>FE: Seleciona aluno, valor e mensagem
+    FE->>TC: POST /api/transacoes/envio
+    TC->>TS: enviarMoedas(profId, alunoId, valor, msg)
+    TS->>PR: findById(profId)
+    PR-->>TS: professor
+    TS->>TS: valida saldo suficiente
+    TS->>AR: findById(alunoId)
+    AR-->>TS: aluno
+    TS->>PR: save(professor debitado)
+    TS->>AR: save(aluno creditado)
+    TS->>MQ: publica EmailEvent(aluno)
+    TS-->>TC: TransacaoResponse
+    TC-->>FE: 200 OK
+    MQ-->>EC: consome evento
+    EC->>EC: monta template aluno
+    EC-->>Professor: (email confirmação envio)
+    EC-->>Aluno: email recebimento de moedas

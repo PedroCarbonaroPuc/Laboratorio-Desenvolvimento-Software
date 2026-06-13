@@ -1,0 +1,296 @@
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ffffff","primaryBorderColor":"#455a64","lineColor":"#546e7a","fontFamily":"Arial","fontSize":"13px"}}}%%
+classDiagram
+    direction LR
+
+    class Role {
+      <<Enumeration>>
+      STUDENT
+      PROFESSOR
+      PARTNER
+    }
+
+    class TransactionType {
+      <<Enumeration>>
+      SEMESTER_ALLOCATION
+      PROFESSOR_TO_STUDENT
+      REDEMPTION
+    }
+
+    class TransactionActorType {
+      <<Enumeration>>
+      SYSTEM
+      PROFESSOR
+      STUDENT
+      PARTNER
+    }
+
+    class Institution {
+      <<Entity>>
+      +id: String
+      +name: String
+      +campus: String
+      +city: String
+      +createdAt: Instant
+    }
+
+    class Student {
+      <<Entity>>
+      +id: String
+      +name: String
+      +email: String
+      +cpf: String
+      +rg: String
+      +address: String
+      +institutionId: String
+      +course: String
+      +passwordHash: String
+      +balance: long
+      +createdAt: Instant
+      +updatedAt: Instant
+    }
+
+    class Professor {
+      <<Entity>>
+      +id: String
+      +name: String
+      +email: String
+      +cpf: String
+      +department: String
+      +institutionId: String
+      +passwordHash: String
+      +balance: long
+      +createdAt: Instant
+      +updatedAt: Instant
+    }
+
+    class PartnerCompany {
+      <<Entity>>
+      +id: String
+      +companyName: String
+      +contactName: String
+      +email: String
+      +cnpj: String
+      +address: String
+      +passwordHash: String
+      +createdAt: Instant
+      +updatedAt: Instant
+    }
+
+    class Benefit {
+      <<Entity>>
+      +id: String
+      +partnerId: String
+      +title: String
+      +description: String
+      +imageUrl: String
+      +costCoins: long
+      +active: boolean
+      +createdAt: Instant
+      +updatedAt: Instant
+    }
+
+    class CoinTransaction {
+      <<Entity>>
+      +id: String
+      +type: TransactionType
+      +amount: long
+      +description: String
+      +fromActorType: TransactionActorType
+      +fromActorId: String
+      +toActorType: TransactionActorType
+      +toActorId: String
+      +professorId: String
+      +studentId: String
+      +partnerId: String
+      +benefitId: String
+      +couponCode: String
+      +semesterKey: String
+      +createdAt: Instant
+    }
+
+    class SessionToken {
+      <<Entity>>
+      +id: String
+      +token: String
+      +role: Role
+      +userId: String
+      +createdAt: Instant
+      +expiresAt: Instant
+    }
+
+    class ProfessorSemesterAllowance {
+      <<Entity>>
+      +id: String
+      +professorId: String
+      +semesterKey: String
+      +professorSemesterKey: String
+      +allocatedAmount: long
+      +createdAt: Instant
+    }
+
+    class AuthService {
+      <<Service>>
+      +login(): AuthResponse
+      +logout(): void
+      +currentUser(): CurrentUser
+    }
+
+    class StudentService {
+      <<Service>>
+      +register(): StudentResponse
+      +update(): StudentResponse
+      +delete(): void
+      +currentUser(): CurrentUserResponse
+    }
+
+    class ProfessorService {
+      <<Service>>
+      +getOwnProfile(): ProfessorProfileResponse
+      +getOwnStatement(): BalanceAndStatementResponse
+      +transferCoins(): void
+    }
+
+    class PartnerService {
+      <<Service>>
+      +register(): PartnerResponse
+      +update(): PartnerResponse
+      +delete(): void
+      +currentUser(): CurrentUserResponse
+    }
+
+    class BenefitService {
+      <<Service>>
+      +listActive(): ListBenefitResponse
+      +create(): BenefitResponse
+      +update(): BenefitResponse
+      +delete(): void
+    }
+
+    class RedemptionService {
+      <<Service>>
+      +redeem(): RedemptionResponse
+    }
+
+    class TransactionService {
+      <<Service>>
+      +recordProfessorTransfer(): void
+      +recordRedemption(): void
+      +recordSemesterAllocation(): void
+      +studentStatement(): ListTransactionResponse
+      +professorStatement(): ListTransactionResponse
+    }
+
+    class SemesterAllocationService {
+      <<Service>>
+      +ensureProfessorAllowance(): void
+      +allocateForAllProfessors(): void
+      +currentSemesterKey(): String
+    }
+
+    class DashboardService {
+      <<Service>>
+      +summaryFor(): DashboardSummaryResponse
+    }
+
+    class NotificationService {
+      <<Service>>
+      +notifyCoinReceived(): void
+      +notifyRedemptionToStudent(): void
+      +notifyRedemptionToPartner(): void
+    }
+
+    class InstitutionRepository {
+      <<Repository>>
+    }
+
+    class StudentRepository {
+      <<Repository>>
+    }
+
+    class ProfessorRepository {
+      <<Repository>>
+    }
+
+    class PartnerRepository {
+      <<Repository>>
+    }
+
+    class BenefitRepository {
+      <<Repository>>
+    }
+
+    class CoinTransactionRepository {
+      <<Repository>>
+    }
+
+    class SessionTokenRepository {
+      <<Repository>>
+    }
+
+    class ProfessorSemesterAllowanceRepository {
+      <<Repository>>
+    }
+
+    Institution "1" --> "0..*" Student : contem
+    Institution "1" --> "0..*" Professor : contem
+    PartnerCompany "1" --> "0..*" Benefit : oferece
+    Professor "1" --> "0..*" ProfessorSemesterAllowance : recebe creditos
+
+    Professor "1" --> "0..*" CoinTransaction : emite
+    Student "1" --> "0..*" CoinTransaction : recebe/resgata
+    PartnerCompany "1" --> "0..*" CoinTransaction : valida
+    Benefit "0..1" <-- "0..*" CoinTransaction : referencia
+
+    Student "1" --> "0..*" SessionToken : abre sessao
+    Professor "1" --> "0..*" SessionToken : abre sessao
+    PartnerCompany "1" --> "0..*" SessionToken : abre sessao
+
+    Role "1" <-- "0..*" SessionToken : classifica
+    TransactionType "1" <-- "0..*" CoinTransaction : classifica
+
+    AuthService ..> SessionTokenRepository
+    AuthService ..> StudentRepository
+    AuthService ..> ProfessorRepository
+    AuthService ..> PartnerRepository
+
+    StudentService ..> StudentRepository
+    StudentService ..> InstitutionRepository
+
+    ProfessorService ..> ProfessorRepository
+    ProfessorService ..> StudentRepository
+    ProfessorService ..> SemesterAllocationService
+    ProfessorService ..> TransactionService
+    ProfessorService ..> NotificationService
+
+    PartnerService ..> PartnerRepository
+    BenefitService ..> BenefitRepository
+
+    RedemptionService ..> StudentRepository
+    RedemptionService ..> BenefitService
+    RedemptionService ..> PartnerService
+    RedemptionService ..> TransactionService
+    RedemptionService ..> NotificationService
+
+    TransactionService ..> CoinTransactionRepository
+    TransactionService ..> StudentRepository
+    TransactionService ..> ProfessorRepository
+    TransactionService ..> PartnerRepository
+
+    SemesterAllocationService ..> ProfessorRepository
+    SemesterAllocationService ..> ProfessorSemesterAllowanceRepository
+    SemesterAllocationService ..> TransactionService
+
+    DashboardService ..> CoinTransactionRepository
+    DashboardService ..> BenefitRepository
+
+    InstitutionRepository --> Institution
+    StudentRepository --> Student
+    ProfessorRepository --> Professor
+    PartnerRepository --> PartnerCompany
+    BenefitRepository --> Benefit
+    CoinTransactionRepository --> CoinTransaction
+    SessionTokenRepository --> SessionToken
+    ProfessorSemesterAllowanceRepository --> ProfessorSemesterAllowance
+
+    note for CoinTransaction "Ledger de moedas com historico imutavel e orientado a eventos."
+    note for ProfessorSemesterAllowance "Invariante: professorSemesterKey deve ser unico por professor e semestre."

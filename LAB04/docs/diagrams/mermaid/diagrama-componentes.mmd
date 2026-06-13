@@ -1,0 +1,36 @@
+%% Diagrama de Componentes — Sistema de Moeda Estudantil
+%% Renderize com: mmdc -i diagrama-componentes.mmd -o ../../images/diagrama-componentes.png
+flowchart TB
+    subgraph Client["🖥️ Frontend (React + Vite + Tailwind)"]
+        UI[Componentes de UI]
+        ApiClient[Cliente HTTP / Axios]
+        UI --> ApiClient
+    end
+
+    subgraph Backend["☕ Backend (Spring Boot - MVC)"]
+        direction TB
+        Controllers["Camada Controller<br/>REST API"]
+        Services["Camada Service<br/>Regras de negócio"]
+        Repositories["Camada Repository<br/>Spring Data / DAO"]
+        Security["Módulo de Segurança<br/>JWT + Filtros"]
+        Messaging["Módulo de Mensageria<br/>Producer RabbitMQ"]
+        EmailConsumer["Consumer de Email<br/>Templates Thymeleaf"]
+
+        Controllers --> Services
+        Services --> Repositories
+        Services --> Messaging
+        Controllers --> Security
+        Messaging --> EmailConsumer
+    end
+
+    subgraph Infra["🐳 Infraestrutura (Docker)"]
+        Mongo[(MongoDB)]
+        Rabbit{{RabbitMQ}}
+        Mail[/MailHog - SMTP/]
+    end
+
+    ApiClient -->|HTTP/JSON| Controllers
+    Repositories -->|Driver Mongo| Mongo
+    Messaging -->|AMQP publish| Rabbit
+    Rabbit -->|AMQP consume| EmailConsumer
+    EmailConsumer -->|SMTP| Mail
